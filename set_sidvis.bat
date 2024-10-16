@@ -1,21 +1,21 @@
-set hvsc_path=C:\Users\aidan\Music\C64Music
-set sidinfo_path=C:\Users\aidan\sid\sidinfo
-set sidplayfp_path=C:\msys64\ucrt64\bin
-set ffmpeg_path=C:\Users\aidan\OneDrive\Desktop\Stuff\Replace\ffmpeg
+set hvsc_path=
+set sidinfo_path=
+set sidplayfp_path=
+set ffmpeg_path=
 
-set wav_path=C:\Users\aidan\.jsidplay2
+set wav_path=
 
 set use_hvsc=1
-set sid_path=musicians\f\follin_geoff\aiginas_prophecy.sid
-set track=9
-set time=00:22
-set fade_time=10
+set sid_path=
+set track=1
+set time=00:00
+set fade_time=0
 
 set delay=4096
-set clock=p
+set clock=a
 set sid_model=a
 set o_filter_curve=1
-set o_filter_range=0.5
+set o_filter_range=0.4
 set combined_waves=a
 
 set trigger_1_change_waves=1
