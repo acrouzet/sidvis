@@ -54,7 +54,7 @@ if "%trigger_3_change_waves%" == "1" (set "tg3_tw=-tw") else (set "tg3_tw=")
 
 cd %sidplayfp_path%
 
-set "common_set=-f192000 -ols%track% -t%rec_time% --delay=%delay% -v%rec_clock%f -m%rec_model%f --fcurve=%rec_filter_curve% --frange=%o_filter_range%"
+set "common_set=-f192000 -ols%track% -t%rec_time% --delay=%delay% -v%rec_clock%f -m%rec_model%f --fcurve=%rec_filter_curve% --frange=%o_filter_range% -cw%combined_waves%"
 
 sidplayfp %common_set% --wav"%ffmpeg_path%\ch0.wav" -ri -u1 -u2 -u3                   "%full_sid_path%"
 sidplayfp %common_set% --wav"%ffmpeg_path%\ch1.wav" -ri     -u2 -u3                   "%full_sid_path%" 

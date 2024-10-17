@@ -50,7 +50,7 @@ if "%rec_model%" == "o" (set "rec_filter_curve=%o_filter_curve%") else (set "rec
 
 cd %sidplayfp_path%
 
-set "common_set=-f192000 -ols%track% -t%rec_time% --delay=%delay% -v%rec_clock%f -m%rec_model%f %digiboost% --fcurve=%rec_filter_curve% --frange=%o_filter_range% -rr"
+set "common_set=-f192000 -ols%track% -t%rec_time% --delay=%delay% -v%rec_clock%f -m%rec_model%f %digiboost% --fcurve=%rec_filter_curve% --frange=%o_filter_range% -cw%combined_waves%" -rr"
 
 for %%N in ("%full_sid_path%") do (
 	sidplayfp %common_set% --wav"%wav_path%\%%~nN_all_raw.wav" "%full_sid_path%"
