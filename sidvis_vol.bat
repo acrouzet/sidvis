@@ -2,6 +2,9 @@ echo off
 call set_sidvis.bat
 setlocal enabledelayedexpansion
 
+if "%quiet%" == "0" (set "q_echo=echo on") else (set "q_echo=")
+%q_echo%
+
 for /f "delims=: tokens=1,2" %%X in ("%time%") do (set /a "sec=(60*(1%%X-100))+(1%%Y-100)")
 set "sid_path_fix=%sid_path:\=/%"
 if "%use_hvsc%" == "1" (
@@ -56,9 +59,11 @@ if "%trigger_1_change_waves%" == "1" (set "tg1_tw=-tw") else (set "tg1_tw=")
 if "%trigger_2_change_waves%" == "1" (set "tg2_tw=-tw") else (set "tg2_tw=")
 if "%trigger_3_change_waves%" == "1" (set "tg3_tw=-tw") else (set "tg3_tw=")
 
-cd %sidplayfp_path%
+if "%quiet%" == "1" (set "q_sidplayfp=-q2") else (set "q_sidplayfp=")
 
-set "common_set=-f192000 -ols%track% -t%rec_time% --delay=%delay% -v%rec_clock%f -m%rec_model%f %digiboost% --fcurve=%rec_filter_curve% --frange=%o_filter_range% -cw%combined_waves%"
+set "common_set=-f192000 -ols%track% -t%rec_time% --delay=%delay% -v%rec_clock%f -m%rec_model%f %digiboost% --fcurve=%rec_filter_curve% --frange=%o_filter_range% -cw%combined_waves% %q_sidplayfp%"
+
+cd %sidplayfp_path%
 
 sidplayfp %common_set% --wav"%ffmpeg_path%\ch0.wav" -ri -u1 -u2 -u3 -g1                   "%full_sid_path%"
 sidplayfp %common_set% --wav"%ffmpeg_path%\ch1.wav" -ri     -u2 -u3 -g1                   "%full_sid_path%" 
@@ -71,8 +76,7 @@ sidplayfp %common_set% --wav"%ffmpeg_path%\tg2.wav" -ri -u1     -u3 -g1 %tg2_nf%
 sidplayfp %common_set% --wav"%ffmpeg_path%\tg3.wav" -ri -u1 -u2     -g1 %tg3_nf% %tg3_tw% "%full_sid_path%"
 sidplayfp %common_set% --wav"%ffmpeg_path%\all.wav" -rr                                   "%full_sid_path%"
 
-cd %ffmpeg_path%
-
+if "%quiet%" == "1" (set "q_ffmpeg=-hide_banner -loglevel error") else (set "q_ffmpeg=")
 if "%trigger_1_filter%" == "0" (set "tg0_1.wav=nf0.wav") else (set "tg0_1.wav=ch0.wav")
 if "%trigger_2_filter%" == "0" (set "tg0_2.wav=nf0.wav") else (set "tg0_2.wav=ch0.wav")
 if "%trigger_3_filter%" == "0" (set "tg0_3.wav=nf0.wav") else (set "tg0_3.wav=ch0.wav")
@@ -82,8 +86,10 @@ set "concat=concat=n=3:v=0:a=1"
 set "mix=amix=normalize=0"
 for %%N in ("%full_sid_path%") do (set "prefix=%%~nN")
 
+cd %ffmpeg_path%
+
 for /f "tokens=6 delims=- " %%D in ('ffmpeg -i "vol.wav" -af "astats" -f null nul 2^>^&1 ^|find /i "DC offset"') do (
-	ffmpeg -i "ch0.wav" -i "ch1.wav" -i "ch2.wav" -i "ch3.wav" -i "vol.wav"  -i "%tg0_1.wav%" -i "%tg0_2.wav%" -i "%tg0_3.wav%" -i "tg1.wav" -i "tg2.wav" -i "tg3.wav" -filter_complex ^"^
+	ffmpeg !q_ffmpeg! -i "ch0.wav" -i "ch1.wav" -i "ch2.wav" -i "ch3.wav" -i "vol.wav"  -i "%tg0_1.wav%" -i "%tg0_2.wav%" -i "%tg0_3.wav%" -i "tg1.wav" -i "tg2.wav" -i "tg3.wav" -filter_complex ^"^
 	[0:a]!trim!,!invert!,asplit=3[ch0_trm_inv_1][ch0_trm_inv_2][ch0_trm_inv_3];^
 	[1:a]!trim!,[ch0_trm_inv_1]!mix![ch1_trm_0dc];^
 	[2:a]!trim!,[ch0_trm_inv_2]!mix![ch2_trm_0dc];^
@@ -118,7 +124,7 @@ if "%rec_clock%" == "n" set "adj_rate=192008"
 if "%rec_clock%" == "p" set "adj_rate=192045"
 
 for /f "tokens=5 delims=- " %%V in ('ffmpeg -i "chn_trm_0dc_cct.wav" -af "volumedetect" -f null nul 2^>^&1 ^|find /i "max_volume"') do (
-	ffmpeg -i "chn_trm_0dc_cct.wav" -i "vol_trm_0dc.wav" -i "all.wav" -filter_complex ^"^
+	ffmpeg !q_ffmpeg! -i "chn_trm_0dc_cct.wav" -i "vol_trm_0dc.wav" -i "all.wav" -filter_complex ^"^
 	[0:a]volume=%%VdB,asplit=3[chn_trm_0dc_cct_nrm_1][chn_trm_0dc_cct_nrm_2][chn_trm_0dc_cct_nrm_3];^
 	[chn_trm_0dc_cct_nrm_1]atrim=end_sample=!samples!,asetpts=PTS-STARTPTS,!fade![ch1_trm_0dc_nrm_fad];^
 	[chn_trm_0dc_cct_nrm_2]atrim=start_sample=!samples!:end_sample=!samples_x2!,asetpts=PTS-STARTPTS,!fade![ch2_trm_0dc_nrm_fad];^
@@ -132,7 +138,7 @@ for /f "tokens=5 delims=- " %%V in ('ffmpeg -i "chn_trm_0dc_cct.wav" -af "volume
 	-map "[all_trm_hpf_adj_fad]" "all_trm_hpf_adj_fad.wav"
 )
 for /f "tokens=5 delims=- " %%V in ('ffmpeg -i "all_trm_hpf_adj_fad.wav" -af "volumedetect" -f null nul 2^>^&1 ^|find /i "max_volume"') do (
-	ffmpeg -i "all_trm_hpf_adj_fad.wav" -af "volume=%%VdB" "!wav_path!\!prefix!_!track!_all.wav"
+	ffmpeg !q_ffmpeg! -i "all_trm_hpf_adj_fad.wav" -af "volume=%%VdB" "!wav_path!\!prefix!_!track!_all.wav"
 )
 
 if "%keep_ffmpeg_wavs%" == "0" (

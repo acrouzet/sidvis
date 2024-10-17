@@ -26,4 +26,5 @@ set trigger_2_filter=0
 set trigger_3_filter=0
 set trigger_vol_highpass=3
 
+set quiet=1
 set keep_ffmpeg_wavs=0

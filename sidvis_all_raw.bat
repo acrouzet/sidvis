@@ -2,6 +2,9 @@ echo off
 call set_sidvis.bat
 setlocal enabledelayedexpansion
 
+if "%quiet%" == "0" (set "q_echo=echo on") else (set "q_echo=")
+%q_echo%
+
 for /f "delims=: tokens=1,2" %%X in ("%time%") do (set /a "sec=(60*(1%%X-100))+(1%%Y-100)")
 set "sid_path_fix=%sid_path:\=/%"
 if "%use_hvsc%" == "1" (
@@ -48,9 +51,11 @@ if "%sid_model%" == "d" (set "digiboost=--digiboost") else (set "digiboost=")
 
 if "%rec_model%" == "o" (set "rec_filter_curve=%o_filter_curve%") else (set "rec_filter_curve=0.5")
 
-cd %sidplayfp_path%
+if "%quiet%" == "1" (set "q_sidplayfp=-q2") else (set "q_sidplayfp=")
 
-set "common_set=-f192000 -ols%track% -t%rec_time% --delay=%delay% -v%rec_clock%f -m%rec_model%f %digiboost% --fcurve=%rec_filter_curve% --frange=%o_filter_range% -cw%combined_waves%" -rr"
+set "common_set=-f192000 -rr -ols%track% -t%rec_time% --delay=%delay% -v%rec_clock%f -m%rec_model%f %digiboost% --fcurve=%rec_filter_curve% --frange=%o_filter_range% -cw%combined_waves%" %q_sidplayfp%"
+
+cd %sidplayfp_path%
 
 for %%N in ("%full_sid_path%") do (
 	sidplayfp %common_set% --wav"%wav_path%\%%~nN_all_raw.wav" "%full_sid_path%"
