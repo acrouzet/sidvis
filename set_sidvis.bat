@@ -16,7 +16,7 @@ set clock=a
 set sid_model=a
 set o_filter_curve=1.0
 set o_filter_range=0.4
-set combined_waves=w
+set combined_waves=a
 
 set trigger_1_change_waves=1
 set trigger_2_change_waves=1
