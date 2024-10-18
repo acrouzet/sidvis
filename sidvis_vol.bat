@@ -115,7 +115,6 @@ for /f "tokens=6 delims=- " %%D in ('ffmpeg -i "vol.wav" -af "astats" -f null nu
 
 for /f "tokens=5" %%S in ('ffmpeg -i "%wav_path%\%prefix%_%track%_tg1.wav" -af "volumedetect" -f null nul 2^>^&1 ^|find /i "n_samples"') do (set "samples=%%S")
 set /a "samples_x2=%samples%*2"
-set /a "samples_x3=%samples%*3"
 set /a "fade_samples=%fade_time%*192000"
 set /a "fade_start_sample=%samples%-%fade_samples%"
 if %fade_start_sample% lss 0 set fade_start_sample=0
