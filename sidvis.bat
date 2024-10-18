@@ -42,7 +42,7 @@ if "%clock%" == "a" (
 
 
 if "%sid_model%" == "a" (
-	for /f "tokens=9 delims= " %%M in ('%sidplayfp_path%\sidplayfp -v -t1 --none "%full_sid_path%" 2^>^&1 ^|find /i "SID Model"') do (
+	for /f "tokens=7 delims= " %%M in ('%sidplayfp_path%\sidplayfp -v -t1 --none "%full_sid_path%" 2^>^&1 ^|find /i "SID Details"') do (
 		if "%%M" == "MOS6581" (set "rec_model=-mof") else (set "rec_model=-mnf")
 	)
 ) else (if "%sid_model%" == "o" (set "rec_model=-mof") else (set "rec_model=-mnf"))
