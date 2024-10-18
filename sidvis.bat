@@ -53,17 +53,26 @@ if "%sid_model%" == "d" (set "digiboost=--digiboost") else (set "digiboost=")
 if "%rec_model%" == "-mof" (set "rec_filter_curve=%o_filter_curve%") else (set "rec_filter_curve=0.5")
 
 
-if "%trigger_1_change_waves%" == "1" (set "tg1_tw=-tw") else (set "tg1_tw=")
-if "%trigger_2_change_waves%" == "1" (set "tg2_tw=-tw") else (set "tg2_tw=")
-if "%trigger_3_change_waves%" == "1" (set "tg3_tw=-tw") else (set "tg3_tw=")
-
-if "%trigger_1_filter%" == "0" (set "tg1_nf=-nf") else (set "tg1_nf=")
-if "%trigger_2_filter%" == "0" (set "tg2_nf=-nf") else (set "tg2_nf=")
-if "%trigger_3_filter%" == "0" (set "tg3_nf=-nf") else (set "tg3_nf=")
-
-if "%trigger_1_filter%" == "0" (set "tg0_1.wav=nf0.wav") else (set "tg0_1.wav=ch0.wav")
-if "%trigger_2_filter%" == "0" (set "tg0_2.wav=nf0.wav") else (set "tg0_2.wav=ch0.wav")
-if "%trigger_3_filter%" == "0" (set "tg0_3.wav=nf0.wav") else (set "tg0_3.wav=ch0.wav")
+for /l %%N in (1,1,9) do (
+	setlocal enabledelayedexpansion
+	if "!trigger_%%N_change_waves!" == "1" (
+		endlocal
+		set "tg%%N_tw=-tw"
+	) else (
+		endlocal 
+		set "tg%%N_tw="
+	)
+	setlocal enabledelayedexpansion
+	if "!trigger_%%N_filter!" == "0" (
+		endlocal 
+		set "tg%%N_nf=-nf"
+		set "tg0_%%N.wav=nf0.wav"
+	) else (
+		endlocal 
+		set "tg%%N_nf="
+		set "tg0_%%N.wav=ch0.wav"
+	)
+)
 
 
 if "%quiet%" == "1" (set "q_sidplayfp=-q2") else (set "q_sidplayfp=")
