@@ -1,8 +1,6 @@
 set hvsc_path=
-set sidinfo_path=
 set sidplayfp_path=
 set ffmpeg_path=
-
 set wav_path=
 
 set use_hvsc=0
