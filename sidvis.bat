@@ -1,8 +1,21 @@
 @echo off
+
 call set_sidvis.bat
+
 setlocal enabledelayedexpansion
-if !quiet! equ 0 (set "q_echo=echo on") else (set "q_echo=")
+
+
+if !quiet! equ 0 (
+	set "q_echo=echo on"
+	set "q_sidplayfp=sidplayfp"
+	set "q_ffmpeg=ffmpeg"
+) else (
+	set "q_echo="
+	set "q_sidplayfp=sidplayfp -q2"
+	set "q_ffmpeg=ffmpeg -hide_banner -loglevel error"
+)
 !q_echo!
+
 
 cd !sidplayfp_path!
 
@@ -57,8 +70,6 @@ for %%F in ("!full_sid_path!") do (set "prefix=%%~nF")
 
 set "common_set=-f192000 -ols!track! -t!rec_time! --delay=!delay! !rec_clock! !rec_model! !digiboost! --fcurve=!rec_filter_curve! --frange=!o_filter_range! -cw!combined_waves!"
 
-if !quiet! equ 1 (set "q_sidplayfp=sidplayfp -q2") else (set "q_sidplayfp=sidplayfp")
-
 
 if "!channel_config!" == "t" (
 	sidplayfp -!pan! !common_set! -v -rr --wav"!wav_path!\!prefix!_!track!_t.wav" "!full_sid_path!"
@@ -69,14 +80,13 @@ if "!channel_config!" == "t" (
 )
 
 
-
 if !channel_config! equ 4 (
 	!q_sidplayfp! -m !common_set! -ri --wav"!ffmpeg_path!\vol.wav" -ri -u1 -u2 -u3 -nf "!full_sid_path!"
-	set "rec_g1=-g1"
-) else (set "rec_g1=")
+	set "chn_g1=-g1"
+) else (set "chn_g1=")
 
 
-set "na_sidplayfp=!q_sidplayfp! -m !rec_g1! !common_set! -ri --wav"!ffmpeg_path!"
+set "na_sidplayfp=!q_sidplayfp! -m !chn_g1! !common_set! -ri --wav"!ffmpeg_path!"
 
 
 if !channel_config! leq 4 set "nums=1,1,3"
@@ -87,10 +97,10 @@ if !channel_config! equ 9 set "nums=1,1,9"
 for /l %%N in (!nums!) do (
 	if !trigger_%%N_filter! equ 0 (
 		set "tg%%N_nf=-nf"
-		set "tg0_%%N.wav=nf0.wav"
+		set "tg0_%%N.wav=ng0.wav"
 	) else (
 		set "tg%%N_nf="
-		set "tg0_%%N.wav=ch0.wav"
+		set "tg0_%%N.wav=cg0.wav"
 	)
 	if !trigger_%%N_change_waves! equ 1 (
 		set "tg%%N_tw=-tw"
@@ -100,37 +110,36 @@ for /l %%N in (!nums!) do (
 )
 
 
-!na_sidplayfp!\ch0.wav" -u1 -u2 -u3 -u4 -u5 -u6 -u7 -u8 -u9                   "!full_sid_path!"
-!na_sidplayfp!\ch1.wav"     -u2 -u3 -u4 -u5 -u6 -u7 -u8 -u9                   "!full_sid_path!" 
-!na_sidplayfp!\ch2.wav" -u1     -u3 -u4 -u5 -u6 -u7 -u8 -u9                   "!full_sid_path!"
-!na_sidplayfp!\ch3.wav" -u1 -u2     -u4 -u5 -u6 -u7 -u8 -u9                   "!full_sid_path!"
-!na_sidplayfp!\nf0.wav" -u1 -u2 -u3 -u4 -u5 -u6 -u7 -u8 -u9 -nf               "!full_sid_path!"
-!na_sidplayfp!\tg1.wav"     -u2 -u3 -u4 -u5 -u6 -u7 -u8 -u9 !tg1_nf! !tg1_tw! "!full_sid_path!"
-!na_sidplayfp!\tg2.wav" -u1     -u3 -u4 -u5 -u6 -u7 -u8 -u9 !tg2_nf! !tg2_tw! "!full_sid_path!"
-!na_sidplayfp!\tg3.wav" -u1 -u2     -u4 -u5 -u6 -u7 -u8 -u9 !tg3_nf! !tg3_tw! "!full_sid_path!"
+!na_sidplayfp!\ch0.wav" -u1 -u2 -u3 -u4 -u5 -u6 -u7 -u8 -u9                       "!full_sid_path!"
+!na_sidplayfp!\ch1.wav"     -u2 -u3 -u4 -u5 -u6 -u7 -u8 -u9                       "!full_sid_path!" 
+!na_sidplayfp!\ch2.wav" -u1     -u3 -u4 -u5 -u6 -u7 -u8 -u9                       "!full_sid_path!"
+!na_sidplayfp!\ch3.wav" -u1 -u2     -u4 -u5 -u6 -u7 -u8 -u9                       "!full_sid_path!"
+!na_sidplayfp!\cg0.wav" -u1 -u2 -u3 -u4 -u5 -u6 -u7 -u8 -u9 -g1                   "!full_sid_path!"
+!na_sidplayfp!\ng0.wav" -u1 -u2 -u3 -u4 -u5 -u6 -u7 -u8 -u9 -g1 -nf               "!full_sid_path!"
+!na_sidplayfp!\tg1.wav"     -u2 -u3 -u4 -u5 -u6 -u7 -u8 -u9 -g1 !tg1_nf! !tg1_tw! "!full_sid_path!"
+!na_sidplayfp!\tg2.wav" -u1     -u3 -u4 -u5 -u6 -u7 -u8 -u9 -g1 !tg2_nf! !tg2_tw! "!full_sid_path!"
+!na_sidplayfp!\tg3.wav" -u1 -u2     -u4 -u5 -u6 -u7 -u8 -u9 -g1 !tg3_nf! !tg3_tw! "!full_sid_path!"
 
 if !channel_config! geq 6 (
-	!na_sidplayfp!\ch4.wav" -u1 -u2 -u3     -u5 -u6 -u7 -u8 -u9                   "!full_sid_path!" 
-	!na_sidplayfp!\ch5.wav" -u1 -u2 -u3 -u4     -u6 -u7 -u8 -u9                   "!full_sid_path!"
-	!na_sidplayfp!\ch6.wav" -u1 -u2 -u3 -u4 -u5     -u7 -u8 -u9                   "!full_sid_path!"
-	!na_sidplayfp!\tg4.wav" -u1 -u2 -u3     -u5 -u6 -u7 -u8 -u9 !tg4_nf! !tg4_tw! "!full_sid_path!"
-	!na_sidplayfp!\tg5.wav" -u1 -u2 -u3 -u4     -u6 -u7 -u8 -u9 !tg5_nf! !tg5_tw! "!full_sid_path!"
-	!na_sidplayfp!\tg6.wav" -u1 -u2 -u3 -u4 -u5     -u7 -u8 -u9 !tg6_nf! !tg6_tw! "!full_sid_path!"
+	!na_sidplayfp!\ch4.wav" -u1 -u2 -u3     -u5 -u6 -u7 -u8 -u9                       "!full_sid_path!" 
+	!na_sidplayfp!\ch5.wav" -u1 -u2 -u3 -u4     -u6 -u7 -u8 -u9                       "!full_sid_path!"
+	!na_sidplayfp!\ch6.wav" -u1 -u2 -u3 -u4 -u5     -u7 -u8 -u9                       "!full_sid_path!"
+	!na_sidplayfp!\tg4.wav" -u1 -u2 -u3     -u5 -u6 -u7 -u8 -u9 -g1 !tg4_nf! !tg4_tw! "!full_sid_path!"
+	!na_sidplayfp!\tg5.wav" -u1 -u2 -u3 -u4     -u6 -u7 -u8 -u9 -g1 !tg5_nf! !tg5_tw! "!full_sid_path!"
+	!na_sidplayfp!\tg6.wav" -u1 -u2 -u3 -u4 -u5     -u7 -u8 -u9 -g1 !tg6_nf! !tg6_tw! "!full_sid_path!"
 )
 if !channel_config! equ 9 (
-	!na_sidplayfp!\ch7.wav" -u1 -u2 -u3 -u4 -u5 -u6     -u8 -u9                   "!full_sid_path!" 
-	!na_sidplayfp!\ch8.wav" -u1 -u2 -u3 -u4 -u5 -u6 -u7     -u9                   "!full_sid_path!"
-	!na_sidplayfp!\ch9.wav" -u1 -u2 -u3 -u4 -u5 -u6 -u7 -u8                       "!full_sid_path!"
-	!na_sidplayfp!\tg7.wav" -u1 -u2 -u3 -u4 -u5 -u6     -u8 -u9 !tg7_nf! !tg7_tw! "!full_sid_path!"
-	!na_sidplayfp!\tg8.wav" -u1 -u2 -u3 -u4 -u5 -u6 -u7     -u9 !tg8_nf! !tg8_tw! "!full_sid_path!"
-	!na_sidplayfp!\tg9.wav" -u1 -u2 -u3 -u4 -u5 -u6 -u7 -u8     !tg9_nf! !tg9_tw! "!full_sid_path!"
+	!na_sidplayfp!\ch7.wav" -u1 -u2 -u3 -u4 -u5 -u6     -u8 -u9                       "!full_sid_path!" 
+	!na_sidplayfp!\ch8.wav" -u1 -u2 -u3 -u4 -u5 -u6 -u7     -u9                       "!full_sid_path!"
+	!na_sidplayfp!\ch9.wav" -u1 -u2 -u3 -u4 -u5 -u6 -u7 -u8                           "!full_sid_path!"
+	!na_sidplayfp!\tg7.wav" -u1 -u2 -u3 -u4 -u5 -u6     -u8 -u9 -g1 !tg7_nf! !tg7_tw! "!full_sid_path!"
+	!na_sidplayfp!\tg8.wav" -u1 -u2 -u3 -u4 -u5 -u6 -u7     -u9 -g1 !tg8_nf! !tg8_tw! "!full_sid_path!"
+	!na_sidplayfp!\tg9.wav" -u1 -u2 -u3 -u4 -u5 -u6 -u7 -u8     -g1 !tg9_nf! !tg9_tw! "!full_sid_path!"
 )
 
 
 cd !ffmpeg_path!
 
-
-if !quiet! equ 1 (set "q_ffmpeg=ffmpeg -hide_banner -loglevel error") else (set "q_ffmpeg=ffmpeg")
 
 set "trim=silenceremove=start_periods=1"
 
@@ -198,6 +207,7 @@ for /f "tokens=5 delims=- " %%V in ('ffmpeg -i "all_trm_hpf_adj_fad.wav" -af "vo
 if "!delete_ffmpeg_wavs!" == "1" (
 	del all.wav
 	del all_trm_hpf_adj_fad.wav
+	del cg0.wav
 	del ch0.wav
 	del ch1.wav
 	del ch1_trm_0dc.wav
@@ -220,7 +230,7 @@ if "!delete_ffmpeg_wavs!" == "1" (
 	del chn_trm_0dc_cct.txt
 	del chn_trm_0dc_cct.wav
 	del chn_trm_0dc_cct_nrm.wav
-	del nf0.wav
+	del ng0.wav
 	del tg1.wav
 	del tg2.wav
 	del tg3.wav
