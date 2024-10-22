@@ -1,20 +1,19 @@
 @echo off
-
 call set_sidvis.bat
-
 setlocal enabledelayedexpansion
 
 
-if !quiet! equ 0 (
-	set "q_echo=echo on"
-	set "q_sidplayfp=sidplayfp"
-	set "q_ffmpeg=ffmpeg"
+if "!quiet!" == "0" (
+	set "echo_q=echo on"
+	set "sidplayfp_q=sidplayfp"
+	set "ffmpeg_q=ffmpeg"
 ) else (
-	set "q_echo="
-	set "q_sidplayfp=sidplayfp -q2"
-	set "q_ffmpeg=ffmpeg -hide_banner -loglevel error"
+	set "echo_q="
+	set "sidplayfp_q=sidplayfp -q2"
+	set "ffmpeg_q=ffmpeg -hide_banner -loglevel error"
 )
-!q_echo!
+
+!echo_q!
 
 
 cd !sidplayfp_path!
@@ -22,12 +21,12 @@ cd !sidplayfp_path!
 
 for /f "delims=: tokens=1,2" %%X in ("!time!") do (set /a "sec=(60*(1%%X-100))+(1%%Y-100)")
 
-if !use_hvsc! equ 1 (
+if "!use_hvsc!" == "1" (
 	set "full_sid_path=!hvsc_path!\!sid_path!"
 	for /f "delims=: eol=" %%N in ('findstr /inc:"!sid_path:\=/!" !hvsc_path!\DOCUMENTS\Songlengths.md5') do (set /a "index_target=%%N/2")
     set "index_count=1"
 	for /f "delims== tokens=2" %%L in (!hvsc_path!\DOCUMENTS\Songlengths.md5) do (
-		if !index_count! equ !index_target! (
+		if "!index_count!" == "!index_target!" (
 			for /f "tokens=%track%" %%T in ("%%L") do (
 				for /f "delims=:. tokens=1-3" %%X in ("%%T") do (
 					set /a "sl_mmss_sec=(60*%%X)+(1%%Y-100)"
@@ -42,7 +41,7 @@ if !use_hvsc! equ 1 (
 if "!decimals!" == "" (set "tenth=0") else (set "tenth=!decimals:~0,1!")
 if !tenth! geq 5 (set /a "rec_time=sl_mmss_sec+1+sec") else (set /a "rec_time=sl_mmss_sec+sec")
 
-if !use_hvsc! equ 0 (
+if "!use_hvsc!" == "0" (
 	set "full_sid_path=!sid_path!"
 	set "rec_time=!sec!"
 )
@@ -66,75 +65,47 @@ if "!sid_model!" == "d" (set "digiboost=--digiboost") else (set "digiboost=")
 
 if "!rec_model!" == "-mof" (set "rec_filter_curve=!o_filter_curve!") else (set "rec_filter_curve=0.5")
 
+set "common_set=-ols!track! -t!rec_time! --delay=!delay! !rec_clock! !rec_model! !digiboost! --fcurve=!rec_filter_curve! --frange=!o_filter_range! -cw!combined_waves! -f192000"
+
 for %%F in ("!full_sid_path!") do (set "prefix=%%~nF")
 
-set "common_set=-f192000 -ols!track! -t!rec_time! --delay=!delay! !rec_clock! !rec_model! !digiboost! --fcurve=!rec_filter_curve! --frange=!o_filter_range! -cw!combined_waves!"
+set z_track=0!track!
 
 
 if "!channel_config!" == "t" (
-	sidplayfp -!pan! !common_set! -v -rr --wav"!wav_path!\!prefix!_!track!_t.wav" "!full_sid_path!"
+	sidplayfp -v !common_set! -rr -!pan! --wav"!wav_path!\!z_track:~-2!_!prefix!_t.wav" "!full_sid_path!"
 	pause
 	exit
 ) else (
-	!q_sidplayfp! -!pan! !common_set! -rr --wav"!ffmpeg_path!\all.wav" "!full_sid_path!"
+	!sidplayfp_q! !common_set! -rr -!pan! --wav"!ffmpeg_path!\sv_m.wav" "!full_sid_path!"
 )
 
 
-if !channel_config! equ 4 (
-	!q_sidplayfp! -m !common_set! -ri --wav"!ffmpeg_path!\vol.wav" -ri -u1 -u2 -u3 -nf "!full_sid_path!"
-	set "chn_g1=-g1"
-) else (set "chn_g1=")
+if "!channel_config!" == "4" (
+
+	!sidplayfp_q! -u1 -u2 -u3 -nf !common_set! -ri -m --wav"!ffmpeg_path!\sv_v.wav" "!full_sid_path!"
+	
+	set "g1=-g1"
+	set "fin=3"
+	
+) else (
+
+	set "g1="
+	set "fin=!channel_config!"
+	
+)
 
 
-set "na_sidplayfp=!q_sidplayfp! -m !chn_g1! !common_set! -ri --wav"!ffmpeg_path!"
+set "mute_set=-u1 -u2 -u3 -u4 -u5 -u6 -u7 -u8 -u9"
 
-
-if !channel_config! leq 4 set "nums=1,1,3"
-if !channel_config! equ 6 set "nums=1,1,6"
-if !channel_config! equ 9 set "nums=1,1,9"
-
-
-for /l %%N in (!nums!) do (
-	if !trigger_%%N_filter! equ 0 (
-		set "tg%%N_nf=-nf"
-		set "tg0_%%N.wav=ng0.wav"
-	) else (
-		set "tg%%N_nf="
-		set "tg0_%%N.wav=cg0.wav"
+for /l %%N in (0,1,!fin!) do (
+	for /l %%E in (0,1,1) do (
+		if "%%E" == "1" (set "tw=-tw") else (set "tw=")
+		for /l %%D in (0,1,1) do (
+			if "%%D" == "1" (set "nf=-nf") else (set "nf=")
+			!sidplayfp_q! !mute_set:-u%%N=! !tw! !nf! !g1! !common_set! -ri -m --wav"!ffmpeg_path!\sv_%%N_tw%%E_nf%%D.wav" "!full_sid_path!"
+		)
 	)
-	if !trigger_%%N_change_waves! equ 1 (
-		set "tg%%N_tw=-tw"
-	) else ( 
-		set "tg%%N_tw="
-	)
-)
-
-
-!na_sidplayfp!\ch0.wav" -u1 -u2 -u3 -u4 -u5 -u6 -u7 -u8 -u9                       "!full_sid_path!"
-!na_sidplayfp!\ch1.wav"     -u2 -u3 -u4 -u5 -u6 -u7 -u8 -u9                       "!full_sid_path!" 
-!na_sidplayfp!\ch2.wav" -u1     -u3 -u4 -u5 -u6 -u7 -u8 -u9                       "!full_sid_path!"
-!na_sidplayfp!\ch3.wav" -u1 -u2     -u4 -u5 -u6 -u7 -u8 -u9                       "!full_sid_path!"
-!na_sidplayfp!\cg0.wav" -u1 -u2 -u3 -u4 -u5 -u6 -u7 -u8 -u9 -g1                   "!full_sid_path!"
-!na_sidplayfp!\ng0.wav" -u1 -u2 -u3 -u4 -u5 -u6 -u7 -u8 -u9 -g1 -nf               "!full_sid_path!"
-!na_sidplayfp!\tg1.wav"     -u2 -u3 -u4 -u5 -u6 -u7 -u8 -u9 -g1 !tg1_nf! !tg1_tw! "!full_sid_path!"
-!na_sidplayfp!\tg2.wav" -u1     -u3 -u4 -u5 -u6 -u7 -u8 -u9 -g1 !tg2_nf! !tg2_tw! "!full_sid_path!"
-!na_sidplayfp!\tg3.wav" -u1 -u2     -u4 -u5 -u6 -u7 -u8 -u9 -g1 !tg3_nf! !tg3_tw! "!full_sid_path!"
-
-if !channel_config! geq 6 (
-	!na_sidplayfp!\ch4.wav" -u1 -u2 -u3     -u5 -u6 -u7 -u8 -u9                       "!full_sid_path!" 
-	!na_sidplayfp!\ch5.wav" -u1 -u2 -u3 -u4     -u6 -u7 -u8 -u9                       "!full_sid_path!"
-	!na_sidplayfp!\ch6.wav" -u1 -u2 -u3 -u4 -u5     -u7 -u8 -u9                       "!full_sid_path!"
-	!na_sidplayfp!\tg4.wav" -u1 -u2 -u3     -u5 -u6 -u7 -u8 -u9 -g1 !tg4_nf! !tg4_tw! "!full_sid_path!"
-	!na_sidplayfp!\tg5.wav" -u1 -u2 -u3 -u4     -u6 -u7 -u8 -u9 -g1 !tg5_nf! !tg5_tw! "!full_sid_path!"
-	!na_sidplayfp!\tg6.wav" -u1 -u2 -u3 -u4 -u5     -u7 -u8 -u9 -g1 !tg6_nf! !tg6_tw! "!full_sid_path!"
-)
-if !channel_config! equ 9 (
-	!na_sidplayfp!\ch7.wav" -u1 -u2 -u3 -u4 -u5 -u6     -u8 -u9                       "!full_sid_path!" 
-	!na_sidplayfp!\ch8.wav" -u1 -u2 -u3 -u4 -u5 -u6 -u7     -u9                       "!full_sid_path!"
-	!na_sidplayfp!\ch9.wav" -u1 -u2 -u3 -u4 -u5 -u6 -u7 -u8                           "!full_sid_path!"
-	!na_sidplayfp!\tg7.wav" -u1 -u2 -u3 -u4 -u5 -u6     -u8 -u9 -g1 !tg7_nf! !tg7_tw! "!full_sid_path!"
-	!na_sidplayfp!\tg8.wav" -u1 -u2 -u3 -u4 -u5 -u6 -u7     -u9 -g1 !tg8_nf! !tg8_tw! "!full_sid_path!"
-	!na_sidplayfp!\tg9.wav" -u1 -u2 -u3 -u4 -u5 -u6 -u7 -u8     -g1 !tg9_nf! !tg9_tw! "!full_sid_path!"
 )
 
 
@@ -142,103 +113,70 @@ cd !ffmpeg_path!
 
 
 set "trim=silenceremove=start_periods=1"
-
 set "invert=aeval='-val(0)':c=same"
-
 set "mix=amix=normalize=0"
 
-
-for /l %%N in (!nums!) do (
-
-	!q_ffmpeg! -i "ch0.wav" -i "ch%%N.wav" -filter_complex "[0:a]!trim!,!invert![ch0_trm_inv];[1:a]!trim!,[ch0_trm_inv]!mix![chn_trm_0dc]" -map "[chn_trm_0dc]" "ch%%N_trm_0dc.wav"
-	echo file 'ch%%N_trm_0dc.wav' >> chn_trm_0dc_cct.txt
+for /l %%N in (1,1,!fin!) do (
+	for /l %%E in (0,1,1) do (
+		for /l %%D in (0,1,1) do (
+			
+			!ffmpeg_q! -i "sv_0_tw%%E_nf%%D.wav" -i "sv_%%N_tw%%E_nf%%D.wav" ^
+			-filter_complex "[0:a]!trim!,!invert![0_tw%%E_nf%%D_trm_inv];[1:a]!trim!,[0_tw%%E_nf%%D_trm_inv]!mix![%%N_tw%%E_nf%%D_trm_0dc]" ^
+			-map "[%%N_tw%%E_nf%%D_trm_0dc]" "sv_%%N_tw%%E_nf%%D_trm_0dc.wav"
 	
-	for /f "tokens=5" %%S in ('ffmpeg -i "ch1_trm_0dc.wav" -af "volumedetect" -f null nul 2^>^&1 ^|find /i "n_samples"') do (set /a "samples_x%%N=%%S*%%N")
-	
+			echo file 'sv_%%N_tw%%E_nf%%D_trm_0dc.wav' >> sv_cct_tw%%E_nf%%D_trm_0dc.txt
+			
+		)
+	)
 )
 
-!q_ffmpeg! -f concat -safe 0 -i chn_trm_0dc_cct.txt -c copy "chn_trm_0dc_cct.wav"
-
-
+for /l %%N in (1,1,!fin!) do (		
+	for /f "tokens=5" %%S in ('ffmpeg -i "sv_1_tw0_nf0_trm_0dc.wav" -af "volumedetect" -f null nul 2^>^&1 ^|find /i "n_samples"') do (set /a "samples_x%%N=%%S*%%N")
+)
 set /a "fade_samples=fade_time*192000"
 set /a "fade_start_sample=!samples_x1!-!fade_samples!"
 if !fade_start_sample! lss 0 set fade_start_sample=0
 if !fade_time! geq 1 (set "fade=afade=t=out:ss=!fade_start_sample!:ns=!fade_samples!:curve=cub") else (set "fade=anull")
 
 
-for /f "tokens=5 delims=- " %%V in ('ffmpeg -i "chn_trm_0dc_cct.wav" -af "volumedetect" -f null nul 2^>^&1 ^|find /i "max_volume"') do (
-
-	!q_ffmpeg! -i "chn_trm_0dc_cct.wav" -af "volume=%%VdB" "chn_trm_0dc_cct_nrm.wav"
+for /l %%E in (0,1,1) do (
+	for /l %%D in (0,1,1) do (
 	
-	if !channel_config! equ 4 (
-		for /f "tokens=6 delims=- " %%D in ('ffmpeg -i "vol.wav" -af "astats" -f null nul 2^>^&1 ^|find /i "DC offset"') do (
-			!q_ffmpeg! -y -i "vol.wav" -filter_complex "[0:a]!trim!,dcshift=%%D,volume=%%VdB,!fade![vol_trm_0dc_nrm_fad]" -map "[vol_trm_0dc_nrm_fad]" "!wav_path!\!prefix!_!track!_vol.wav"
+		!ffmpeg_q! -f concat -safe 0 -i "sv_cct_tw%%E_nf%%D_trm_0dc.txt" -c copy "sv_cct_tw%%E_nf%%D_trm_0dc.wav"
+		
+		for /f "tokens=5 delims=- " %%V in ('ffmpeg -i "sv_cct_tw%%E_nf%%D_trm_0dc.wav" -af "volumedetect" -f null nul 2^>^&1 ^|find /i "max_volume"') do (
+		
+			if "!channel_config!%%E%%D" == "400" (
+				for /f "tokens=6 delims=- " %%A in ('ffmpeg -i "sv_v.wav" -af "astats" -f null nul 2^>^&1 ^|find /i "DC offset"') do (
+					!ffmpeg_q! -y -i "sv_v.wav" -filter_complex "[0:a]!trim!,dcshift=%%A,volume=%%VdB,!fade![v_trm_0dc_nrm_fad]" -map "[v_trm_0dc_nrm_fad]" "!wav_path!\!z_track:~-2!_!prefix!_v.wav"
+				)
+			)
+			
+			for /l %%N in (1,1,!fin!) do (
+			
+				set /a "samples_xprev=!samples_x%%N!-!samples_x1!"
+	
+				!ffmpeg_q! -i "sv_cct_tw%%E_nf%%D_trm_0dc.wav" ^
+				-filter_complex "[0:a]atrim=start_sample=!samples_xprev!:end_sample=!samples_x%%N!,volume=%%VdB,asetpts=PTS-STARTPTS,!fade![%%N_tw%%E_nf%%D_trm_0dc_nrm_fad]" ^
+				-map "[%%N_tw%%E_nf%%D_trm_0dc_nrm_fad]" "!wav_path!\!z_track:~-2!_!prefix!_tw%%E_nf%%D_%%N.wav"
+				
+			)
+		
 		)
+		
 	)
-	
 )
-
-for /l %%N in (!nums!) do (
-
-	set /a "samples_xprev=!samples_x%%N!-!samples_x1!"
-	
-	!q_ffmpeg! -i "chn_trm_0dc_cct_nrm.wav" -filter_complex "[0:a]atrim=start_sample=!samples_xprev!:end_sample=!samples_x%%N!,asetpts=PTS-STARTPTS,!fade![chn_trm_0dc_nrm_fad]" ^
-	-map "[chn_trm_0dc_nrm_fad]" "!wav_path!\!prefix!_!track!_ch%%N.wav"
-	
-)
-	
-
-for /l %%N in (!nums!) do (
-	!q_ffmpeg! -i "!tg0_%%N.wav!" -i "tg%%N.wav" -filter_complex "[0:a]!trim!,!invert![tg0_trm_inv];[1:a]!trim!,[tg0_trm_inv]!mix!,volume=15dB[tgn_trm_0dc_nrm]" -map "[tgn_trm_0dc_nrm]" "!wav_path!\!prefix!_!track!_tg%%N.wav"
-)
-
 
 if "!rec_clock!" == "-vnf" set "adj_rate=192008"
 if "!rec_clock!" == "-vpf" set "adj_rate=192045"
 
-!q_ffmpeg! -i "all.wav" -filter_complex "[0:a]!trim!,highpass=f=2:p=1,asetrate=!adj_rate!,aresample=192000:resampler=soxr,apad=whole_len=!samples_x1!,atrim=0:end_sample=!samples_x1!,!fade![all_trm_hpf_adj_fad]" ^
--map "[all_trm_hpf_adj_fad]" "all_trm_hpf_adj_fad.wav"
+!ffmpeg_q! -i "sv_m.wav" ^
+-filter_complex "[0:a]!trim!,highpass=f=2:p=1,asetrate=!adj_rate!,aresample=192000:resampler=soxr,apad=whole_len=!samples_x1!,atrim=0:end_sample=!samples_x1!,!fade![m_trm_hpf_adj_fad]" ^
+-map "[m_trm_hpf_adj_fad]" "sv_m_trm_hpf_adj_fad.wav"
 
-for /f "tokens=5 delims=- " %%V in ('ffmpeg -i "all_trm_hpf_adj_fad.wav" -af "volumedetect" -f null nul 2^>^&1 ^|find /i "max_volume"') do (
-	!q_ffmpeg! -i "all_trm_hpf_adj_fad.wav" -af "volume=%%VdB" "!wav_path!\!prefix!_!track!_all.wav"
+for /f "tokens=5 delims=- " %%V in ('ffmpeg -i "sv_m_trm_hpf_adj_fad.wav" -af "volumedetect" -f null nul 2^>^&1 ^|find /i "max_volume"') do (
+	!ffmpeg_q! -i "sv_m_trm_hpf_adj_fad.wav" -af "volume=%%VdB" "!wav_path!\!z_track:~-2!_!prefix!_m.wav"
 )
 
 
-if "!delete_ffmpeg_wavs!" == "1" (
-	del all.wav
-	del all_trm_hpf_adj_fad.wav
-	del cg0.wav
-	del ch0.wav
-	del ch1.wav
-	del ch1_trm_0dc.wav
-	del ch2.wav
-	del ch2_trm_0dc.wav
-	del ch3.wav
-	del ch3_trm_0dc.wav
-	del ch4.wav
-	del ch4_trm_0dc.wav
-	del ch5.wav
-	del ch5_trm_0dc.wav
-	del ch6.wav
-	del ch6_trm_0dc.wav
-	del ch7.wav
-	del ch7_trm_0dc.wav
-	del ch8.wav
-	del ch8_trm_0dc.wav
-	del ch9.wav
-	del ch9_trm_0dc.wav
-	del chn_trm_0dc_cct.txt
-	del chn_trm_0dc_cct.wav
-	del chn_trm_0dc_cct_nrm.wav
-	del ng0.wav
-	del tg1.wav
-	del tg2.wav
-	del tg3.wav
-	del tg4.wav
-	del tg5.wav
-	del tg6.wav
-	del tg7.wav
-	del tg8.wav
-	del tg9.wav
-	del vol.wav
-)
+if "!delete_ffmpeg_wavs!" == "1" (del sv_*)
