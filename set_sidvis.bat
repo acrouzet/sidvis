@@ -5,11 +5,11 @@ set wav_path=
 
 set use_hvsc=
 set sid_path=
-set track=1
+set track=
 set time=
 set fade_time=
 
-set channel_config=3
+set channel_config=
 set pan=m
 
 set delay=4096
