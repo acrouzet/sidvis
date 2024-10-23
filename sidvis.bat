@@ -100,7 +100,7 @@ set "mute_set=-u1 -u2 -u3 -u4 -u5 -u6 -u7 -u8 -u9"
 
 for /l %%N in (0,1,!fin!) do (
 	for /l %%E in (0,1,1) do (
-		if "%%E" == "1" (set "tw=-tw") else (set "tw=")
+		if "%%E" == "1" (set "tw=-tw%%N") else (set "tw=")
 		for /l %%D in (0,1,1) do (
 			if "%%D" == "1" (set "nf=-nf") else (set "nf=")
 			!sidplayfp_q! !mute_set:-u%%N=! !tw! !nf! !g1! !common_set! -ri -m --wav"!ffmpeg_path!\sv_%%N_tw%%E_nf%%D.wav" "!full_sid_path!"
