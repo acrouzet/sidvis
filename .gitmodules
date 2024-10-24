@@ -1,0 +1,6 @@
+[submodule "sidvis-libsidplayfp"]
+	path = sidvis-libsidplayfp
+	url = https://github.com/acrouzet/sidvis-libsidplayfp
+[submodule "sidvis-sidplayfp"]
+	path = sidvis-sidplayfp
+	url = https://github.com/acrouzet/sidvis-sidplayfp
