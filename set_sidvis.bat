@@ -1,15 +1,15 @@
-set hvsc_path=
 set sidplayfp_path=
 set ffmpeg_path=
+set hvsc_path=
 set wav_path=
 
-set use_hvsc=
+set use_hvsc=0
 set sid_path=
-set track=
-set time=
-set fade_time=
+set track=1
+set time=00:00
+set fade_time=0
 
-set channel_config=
+set channel_config=3
 set pan=m
 
 set delay=4096
