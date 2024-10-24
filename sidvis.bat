@@ -2,14 +2,10 @@
 call set_sidvis.bat
 setlocal enabledelayedexpansion
 
-
 set "echo_q=echo on"
 set "sidplayfp_q=sidplayfp"
 set "ffmpeg_q=ffmpeg"
- 
-if !quiet! geq 1 (
-	set "echo_q="
-)
+if !quiet! geq 1 (set "echo_q=")
 if !quiet! geq 2 (
 	set "sidplayfp_q=sidplayfp -q2"
 	set "ffmpeg_q=ffmpeg -hide_banner -loglevel error"
