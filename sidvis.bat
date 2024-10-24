@@ -6,7 +6,10 @@ setlocal enabledelayedexpansion
 set "echo_q=echo on"
 set "sidplayfp_q=sidplayfp"
 set "ffmpeg_q=ffmpeg"
-if !quiet! geq 1 (set "echo_q=")
+ 
+if !quiet! geq 1 (
+	set "echo_q="
+)
 if !quiet! geq 2 (
 	set "sidplayfp_q=sidplayfp -q2"
 	set "ffmpeg_q=ffmpeg -hide_banner -loglevel error"
@@ -84,15 +87,10 @@ if "!channel_config!" == "4" (
 
 	!sidplayfp_q! -u1 -u2 -u3 -nf !common_set! -ri -m --wav"!ffmpeg_path!\sv_v.wav" "!full_sid_path!"
 	
-	set "g1=-g1"
 	set "fin=3"
+	set "g=-g1"
 	
-) else (
-
-	set "g1="
-	set "fin=!channel_config!"
-	
-)
+) else (set "fin=!channel_config!")
 
 
 set "mute_set=-u1 -u2 -u3 -u4 -u5 -u6 -u7 -u8 -u9"
@@ -102,7 +100,8 @@ for /l %%N in (0,1,!fin!) do (
 		if "%%E" == "1" (set "tw=-tw%%N") else (set "tw=")
 		for /l %%D in (0,1,1) do (
 			if "%%D" == "1" (set "nf=-nf") else (set "nf=")
-			!sidplayfp_q! !mute_set:-u%%N=! !tw! !nf! !g1! !common_set! -ri -m --wav"!ffmpeg_path!\sv_%%N_tw%%E_nf%%D.wav" "!full_sid_path!"
+			if "%%E%%D" == "00" (set "g=") else (set "g=-g1 -g2 -g3")
+			!sidplayfp_q! !mute_set:-u%%N=! !tw! !nf! !g! !common_set! -ri -m --wav"!ffmpeg_path!\sv_%%N_tw%%E_nf%%D.wav" "!full_sid_path!"
 		)
 	)
 )
