@@ -3,7 +3,7 @@ call set_sidvis.bat
 setlocal enabledelayedexpansion
 
 set "echo_q=echo on"
-set "sidplayfp_q=sidplayfp"
+set "sidplayfp_q=sidplayfp -v"
 set "ffmpeg_q=ffmpeg"
 if !quiet! geq 1 (set "echo_q=")
 if !quiet! geq 2 (
