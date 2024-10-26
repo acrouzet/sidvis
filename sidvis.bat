@@ -173,4 +173,4 @@ for /f "tokens=5 delims=- " %%V in ('ffmpeg -i "sv_m_trm_hpf_adj_fad.wav" -af "v
 )
 
 
-if "!delete_ffmpeg_wavs!" == "1" (del sv_*)
+if "!delete_ffmpeg_wavs!" == "1" del sv_*
