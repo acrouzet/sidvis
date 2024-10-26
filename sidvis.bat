@@ -75,7 +75,7 @@ if "!channel_config!" == "t" (
 	pause
 	exit
 ) else (
-	!sidplayfp_q! !common_set! -rr -!pan! --wav"!ffmpeg_path!\sv_m.wav" "!full_sid_path!"
+	!sidplayfp_q! !common_set! -rr -!pan! --wav"!ffmpeg_path!\sv_a.wav" "!full_sid_path!"
 )
 
 
@@ -164,12 +164,12 @@ for /l %%E in (0,1,1) do (
 if "!rec_clock!" == "-vnf" set "adj_rate=192008"
 if "!rec_clock!" == "-vpf" set "adj_rate=192045"
 
-!ffmpeg_q! -i "sv_m.wav" ^
--filter_complex "[0:a]!trim!,highpass=f=2:p=1,asetrate=!adj_rate!,aresample=192000:resampler=soxr,apad=whole_len=!samples_x1!,atrim=0:end_sample=!samples_x1!,!fade![m_trm_hpf_adj_fad]" ^
--map "[m_trm_hpf_adj_fad]" "sv_m_trm_hpf_adj_fad.wav"
+!ffmpeg_q! -i "sv_a.wav" ^
+-filter_complex "[0:a]!trim!,highpass=f=2:p=1,asetrate=!adj_rate!,aresample=192000:resampler=soxr,apad=whole_len=!samples_x1!,atrim=0:end_sample=!samples_x1!,!fade![a_trm_hpf_adj_fad]" ^
+-map "[a_trm_hpf_adj_fad]" "sv_a_trm_hpf_adj_fad.wav"
 
-for /f "tokens=5 delims=- " %%V in ('ffmpeg -i "sv_m_trm_hpf_adj_fad.wav" -af "volumedetect" -f null nul 2^>^&1 ^|find /i "max_volume"') do (
-	!ffmpeg_q! -i "sv_m_trm_hpf_adj_fad.wav" -af "volume=%%VdB" "!wav_path!\!z_track:~-2!_!prefix!_tw0_nf0_m.wav"
+for /f "tokens=5 delims=- " %%V in ('ffmpeg -i "sv_a_trm_hpf_adj_fad.wav" -af "volumedetect" -f null nul 2^>^&1 ^|find /i "max_volume"') do (
+	!ffmpeg_q! -i "sv_a_trm_hpf_adj_fad.wav" -af "volume=%%VdB" "!wav_path!\!z_track:~-2!_!prefix!_tw0_nf0_a.wav"
 )
 
 
