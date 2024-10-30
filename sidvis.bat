@@ -1,5 +1,5 @@
 @echo off
-call set_sidvis.bat
+call sidvis-set.bat
 setlocal enabledelayedexpansion
 
 if !quiet! geq 1 (set "echo_q=") else (set "echo_q=echo on")
