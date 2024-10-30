@@ -87,7 +87,7 @@ set pan=<[m]ono|[s]tereo>
    * Set the stereo configuration of the master audio. 
    * Only works with tracks that use over 2 SID chips.
    * Stereo options are currently quite limited and may not be ideal, especially
-     for 3 SID tracks.
+     for 3 SID chips.
 
 
 set clock=<[n]tsc|[p]al]|[a]uto>
