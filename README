@@ -142,16 +142,16 @@ set delete_ffmpeg_wavs=
 
 The contents of a .WAV recording can be determined by looking at its filename. 
 
-The filename follows the template "<##>_<*>_<tw0|tw1>_<nf0|nf1>_<#|v|a>.wav", where:
-   * <##> = The .SID track number.
-   * <*> = The .SID filename.
-   * <tw1> = Particularly difficult-to-trigger waveforms are replaced with simpler
-     ones. In particular, pulse waves and sawtooth-combined waves are replaced 
-	 with sawtooth waves, and triangle+pulse waves are replaced with triangle 
-	 waves. Changes to the master volume are also disabled. 
-   * <nf1> = The filter and changes to the master volume are disabled.
-   * <#> = This channel is enabled.
-   * <v> = The master volume output is isolated. 
-   * <a> = All channels are enabled.
+In order, the filename contains:
+   * The .SID track number.
+   * The .SID filename.
+   * "tw0" or "tw1". "tw1" means particularly difficult-to-trigger waveforms are 
+     replaced with simpler ones. In particular, pulse waves and sawtooth-combined 
+     waves are replaced with sawtooth waves, and triangle+pulse waves are replaced 
+     with triangle waves. Changes to the master volume are also disabled. 
+   * "nf0" or "nf1". "nf1" means the filter and changes to the master volume are 
+     disabled.
+   * A single character representing which channel is enabled/isolated. "v" means 
+     the master volume output is isolated, and "a" means all channels are enabled.
 
 ----------------------------------------------------------------------------------
