@@ -1,4 +1,4 @@
----------------------------------------sidvis---------------------------------------
+------------------------------------- sidvis -------------------------------------
 
 [ABOUT]
 
@@ -18,15 +18,15 @@ The .ZIP downloadable from the “Releases” link on this page contains the
 sidvis-sidplayfp executable for Windows along with the sidvis batch files.
 
 You can compile sidvis-sidplayfp from these repositories:
-	* https://github.com/acrouzet/sidvis-libsidplayfp
-	* https://github.com/acrouzet/sidvis-sidplayfp
+   * https://github.com/acrouzet/sidvis-libsidplayfp
+   * https://github.com/acrouzet/sidvis-sidplayfp
 
 If you don't have the ffmpeg executable, you can download it here:
-	* https://www.ffmpeg.org/download.html
+   * https://www.ffmpeg.org/download.html
 
 sidvis’s .WAV recordings are designed for corrscope, but other oscilloscope 
 view programs may be compatible:
-	* https://github.com/corrscope/corrscope
+   * https://github.com/corrscope/corrscope
 
 
 
@@ -39,122 +39,119 @@ editor to provide and/or change the settings used by sidvis.
 
 
 set sidplayfp_path=<path>
-	* Path to the folder containing the sidvis-sidplayfp executable. 
-	* The .ZIP release sets this for you.
+   * Path to the folder containing the sidvis-sidplayfp executable. 
+   * The .ZIP release sets this for you.
 
 set ffmpeg_path=<path>
-	* Path to the folder containing the ffmpeg executable.
+   * Path to the folder containing the ffmpeg executable.
 
 set hvsc_path=<path>
-	* Path to the folder containing the High Voltage SID Collection.
+   * Path to the folder containing the High Voltage SID Collection.
 
 set wav_path=<path>
-	* Path to the folder to output the .WAV recordings in.
+   * Path to the folder to output the .WAV recordings in.
 
 
 set use_hvsc=<0|1>
-	* Determines how other settings will be interpreted.
-    * 0 = Don't use the HVSC.
-	* 1 = Use the HVSC.
+   * Determines how other settings will be interpreted.
+   * 0 = Don't use the HVSC.
+   * 1 = Use the HVSC.
 
 set sid_path=<path>
-	* Path to the .SID file to record. 
-	* If use_hvsc=1, this path must start from your hvsc_path (i.e. this setting 
-	  will be expanded to the full path "<hvsc_path>\<sid_path>").
+   * Path to the .SID file to record. 
+   * If use_hvsc=1, this path must start from your hvsc_path (i.e. this setting 
+     will be expanded to the full path "<hvsc_path>\<sid_path>").
 
-set track=<num>
-	* The number of the .SID track (sub-tune) to record. If there's only one track, 
-      set this to 1.
+set track=<#>
+   * The number of the .SID track (sub-tune) to record. If there's only one track, 
+     set this to 1.
 
 
 set record_mode=<[n]ormal|[v]olume|[t]est>
-	* volume = Record the master volume output separate from the other channels. 
-	  Use this for tracks that use the master volume as a fourth channel.
-	* test = Only do one recording with all channels enabled.
+   * volume = Record the master volume output separate from the other channels. 
+     Use this for tracks that use the master volume as a fourth channel.
+   * test = Only do one recording with all channels enabled.
 
-set time=<mm:ss>
-	* Must always be in MM:SS format.
-	* If use_hvsc=0, the total record time.
-	* If use_hvsc=1, the record time to add onto the track length provided by the 
-	  HVSC.
+set time=<##:##>
+   * Must always be in MM:SS format.
+   * If use_hvsc=0, the total record time.
+   * If use_hvsc=1, the record time to add onto the track length provided by the 
+     HVSC.
 
-set fadeout_seconds=<num>
-	* The length, in seconds, of a fade-out that can be added to the end of the 
-	  .WAV recordings.
+set fadeout_seconds=<#>
+   * The length, in seconds, of a fade-out that can be added to the end of the 
+    .WAV recordings.
 
 
 set pan=<[m]ono|[s]tereo>
-	* Set the stereo configuration of the master audio. 
-	* Only works with tracks that use over 2 SID chips.
-	* Stereo options are currently quite limited and may not be ideal, especially
-	  for 3 SID tracks.
+   * Set the stereo configuration of the master audio. 
+   * Only works with tracks that use over 2 SID chips.
+   * Stereo options are currently quite limited and may not be ideal, especially
+     for 3 SID tracks.
 
 
 set clock=<[n]tsc|[p]al]|[a]uto>
-	* The C64 clock rates to use.
-	* auto = Automatically choose based on the .SID header.
+   * The C64 clock rates to use.
+   * auto = Automatically choose based on the .SID header.
 
 set sid_model=<[6]581|[8]580|[d]igiboost|[a]uto>
-	* The SID model to use.
-	* digiboost = 8580 modified to have the ability to use the master volume as a 
-	  fourth channel like the 6581.
-	* auto = Automatically choose based on the .SID header.
+   * The SID model to use.
+   * digiboost = 8580 modified to have the ability to use the master volume as a 
+     fourth channel like the 6581.
+   * auto = Automatically choose based on the .SID header.
 	
 set combined_waves=<[w]eak|[a]verage|[s]trong>
-	* Strength of the combined waves. 
-	* Weaker combined waves tend to have a thinner timbre.
+   * Strength of the combined waves. 
+   * Weaker combined waves tend to have a thinner timbre.
 
 set filter_curve_6581=<0.0-1.0>
-	* Together with filter_range_6581, determines the cutoff response of the 6581's
-	  filter.
-	* Ranges from 0.0 (light) to 1.0 (dark).
+   * Together with filter_range_6581, determines the cutoff response of the 6581's
+     filter.
+   * Ranges from 0.0 (light) to 1.0 (dark).
 
 set filter_range_6581=<0.0-1.0>
-	* Together with filter_curve_6581, determines the cutoff response of the 6581's
-	  filter.  
-	* Ranges from 0.0 (dark) to 1.0 (light).
+   * Together with filter_curve_6581, determines the cutoff response of the 6581's
+     filter.  
+   * Ranges from 0.0 (dark) to 1.0 (light).
 
 
-set delay=<num>
-	* C64 power on delay in CPU cycles, ranging from 0 to 8191. 
-	* Set this higher if the start of the track is cut off in the .WAV recordings.
+set delay=<#>
+   * C64 power on delay in CPU cycles, ranging from 0 to 8191. 
+   * Set this higher if the start of the track is cut off in the .WAV recordings.
 	
-set fadein_samples=<num>
-	* The length, in number of samples, of a fade-in that can be added to the start
-	  of the .WAV recording with all channels enabled.
-	* Set this higher if the recordings are too quiet.
+set fadein_samples=<#>
+   * The length, in number of samples, of a fade-in that can be added to the start
+     of the .WAV recording with all channels enabled.
+   * Set this higher if the recordings are too quiet.
 
 
-set quiet=<num>
-* For debug purposes.
-	* 1 = Echo off.
-	* 2 = Quiet ffmpeg.
-	* 3 = Quiet sidplayfp.
+set quiet=<#>
+   * For debug purposes.
+   * 1 = Echo off.
+   * 2 = Quiet ffmpeg.
+   * 3 = Quiet sidplayfp.
 
 set delete_ffmpeg_wavs=
-	* For debug purposes. Delete the intermediary files in the ffmpeg_path?
-	* 0 = No
-	* 1 = Yes
+   * For debug purposes. Delete the intermediary files in the ffmpeg_path?
+   * 0 = No
+   * 1 = Yes
 
 
 
 [.WAV RECORDINGS]
 
-The contents of the .WAV recordings can be determined by looking at their filenames. 
+The contents of a .WAV recording can be determined by looking at its filename. 
 
-In order, the filename contains:
-	* The .SID track number.
-	* The .SID filename.
-	* "tw0" or "tw1". "tw1" means particularly difficult-to-trigger waveforms are 
-	  replaced with simpler ones. In particular, pulse waves and sawtooth-combined 
-	  waves are replaced with sawtooth waves, and triangle+pulse waves are replaced
-	  with triangle waves. Changes to the master volume are also disabled. If a 
-	  channel has hard sync enabled, its waveform is always set to sawtooth, and its
-	  frequency set to that of the master channel (unless all three channels have 
-	  hard sync enabled).
-	* "nf0" or "nf1". "nf1" means the filter and changes to the master volume are 
-	  disabled.
-	* A single character indicating which channel is enabled. "v" means the master 
-	  volume output is isolated. “a” means all channels are enabled.
+The filename follows the template "<##>_<*>_<tw0|tw1>_<nf0|nf1>_<#|v|a>.wav", where:
+   * <##> = The .SID track number.
+   * <*> = The .SID filename.
+   * <tw1> = Particularly difficult-to-trigger waveforms are replaced with simpler
+     ones. In particular, pulse waves and sawtooth-combined waves are replaced 
+	 with sawtooth waves, and triangle+pulse waves are replaced with triangle 
+	 waves. Changes to the master volume are also disabled. 
+   * <nf1> = The filter and changes to the master volume are disabled.
+   * <#> = This channel is enabled.
+   * <v> = The master volume output is isolated. 
+   * <a> = All channels are enabled.
 
-------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------
