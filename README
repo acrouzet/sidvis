@@ -38,17 +38,17 @@ editor to provide and/or change the settings used by sidvis.
 (Non-path options must be lower-case.)
 
 
-set sidplayfp_path=<path>
+set sidplayfp_path=<(path)>
    * Path to the folder containing the sidvis-sidplayfp executable. 
    * The .ZIP release sets this for you.
 
-set ffmpeg_path=<path>
+set ffmpeg_path=<(path)>
    * Path to the folder containing the ffmpeg executable.
 
-set hvsc_path=<path>
+set hvsc_path=<(path)>
    * Path to the folder containing the High Voltage SID Collection.
 
-set wav_path=<path>
+set wav_path=<(path)>
    * Path to the folder to output the .WAV recordings in.
 
 
@@ -57,7 +57,7 @@ set use_hvsc=<0|1>
    * 0 = Don't use the HVSC.
    * 1 = Use the HVSC.
 
-set sid_path=<path>
+set sid_path=<(path)>
    * Path to the .SID file to record. 
    * If use_hvsc=1, this path must start from your hvsc_path (i.e. this setting 
      will be expanded to the full path "<hvsc_path>\<sid_path>").
@@ -131,7 +131,7 @@ set quiet=<#>
    * 2 = Quiet ffmpeg.
    * 3 = Quiet sidplayfp.
 
-set delete_ffmpeg_wavs=
+set delete_ffmpeg_wavs=<0|1>
    * For debug purposes. Delete the intermediary files in the ffmpeg_path?
    * 0 = No
    * 1 = Yes
