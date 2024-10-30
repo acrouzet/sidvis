@@ -4,7 +4,7 @@
 
 sidvis is a batch file script that records .SID music files and outputs .WAV
 files that are meant to be used to create oscilloscope views. To run the script,
-first edit “set_sidvis.bat” to input your desired settings, then run “sidvis.bat”.
+first edit "set_sidvis.bat" to input your desired settings, then run "sidvis.bat".
 It records many 192 kHz sample rate .WAV files, so wait times may be lengthy.
 
 
@@ -14,7 +14,7 @@ It records many 192 kHz sample rate .WAV files, so wait times may be lengthy.
 The .WAV files are recorded from a modified version of sidplayfp (a SID emulation 
 software) and are then processed with ffmpeg.
 
-The .ZIP downloadable from the “Releases” link on this page contains the 
+The .ZIP downloadable from the "Releases" link on this page contains the 
 sidvis-sidplayfp executable for Windows along with the sidvis batch files.
 
 You can compile sidvis-sidplayfp from these repositories:
