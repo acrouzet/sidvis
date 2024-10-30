@@ -24,8 +24,8 @@ You can compile sidvis-sidplayfp from these repositories:
 If you don't have the ffmpeg executable, you can download it here:
    * https://www.ffmpeg.org/download.html
 
-sidvis’s .WAV recordings are designed for corrscope, but other oscilloscope 
-view programs may be compatible:
+sidvis's .WAV recordings are designed for corrscope, but other oscilloscope view 
+programs may be compatible:
    * https://github.com/corrscope/corrscope
 
 
