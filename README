@@ -17,7 +17,7 @@ software) and are then processed with ffmpeg.
 The .ZIP downloadable from the "Releases" link on this page contains the 
 sidvis-sidplayfp executable for Windows along with the sidvis batch files.
 
-You can compile sidvis-sidplayfp from these repositories:
+The source code of sidvis-sidplayfp is in these repositories:
    * https://github.com/acrouzet/sidvis-libsidplayfp
    * https://github.com/acrouzet/sidvis-sidplayfp
 
