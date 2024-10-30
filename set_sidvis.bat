@@ -14,9 +14,9 @@ set sid_path=
 set track=1
 
 
-set record_mode=n
+set record_mode=normal
 
-set pan=m
+set pan=mono
 
 set time=00:00
 
