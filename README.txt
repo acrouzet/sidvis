@@ -14,8 +14,7 @@ It records many 192 kHz sample rate .WAV files, so wait times may be lengthy.
 The .WAV files are recorded from a modified version of sidplayfp (a SID emulation 
 software) and are then processed with ffmpeg.
 
-The .ZIP downloadable from the "Releases" link on this page contains the 
-sidvis-sidplayfp executable for Windows along with the sidvis batch files.
+The .ZIP release contains the sidvis-sidplayfp executable for Windows.
 
 The source code of sidvis-sidplayfp is in these repositories:
    * https://github.com/acrouzet/sidvis-libsidplayfp
