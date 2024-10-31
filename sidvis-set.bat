@@ -18,14 +18,14 @@ set record_mode=normal
 
 set pan=mono
 
-set time=00:10
+set time=00:00
 
 set fadeout_seconds=0
 
 
 set clock=auto
 
-set sid_model=6581
+set sid_model=auto
 
 set combined_waves=average
 
