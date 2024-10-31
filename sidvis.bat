@@ -1,5 +1,5 @@
 @echo off
-call set_sidvis.bat
+call sidvis-set.bat
 setlocal enabledelayedexpansion
 
 if !quiet! geq 1 (set "echo_q=") else (set "echo_q=echo on")
@@ -46,23 +46,23 @@ if "!use_hvsc!" == "0" (
 )
 
 
-if "!clock:~0,1!" == "a" (
+if /i "!clock:~0,1!" == "a" (
 	for /f "tokens=5 delims= " %%C in ('sidplayfp -v -t0 --none "!full_sid_path!" 2^>^&1 ^|find /i "Song Speed"') do (
-		if "%%C" == "NTSC" (set "rec_clock=vnf") else (set "rec_clock=vpf")
+		if /i "%%C" == "NTSC" (set "rec_clock=vnf") else (set "rec_clock=vpf")
 	)
 ) else (set "rec_clock=v!clock:~0,1!f")
 
 
-if "!sid_model:~0,1!" == "a" (
+if /i "!sid_model:~0,1!" == "a" (
 	for /f "tokens=7 delims= " %%M in ('sidplayfp -v -t0 --none "!full_sid_path!" 2^>^&1 ^|find /i "SID Details"') do (
-		if "%%M" == "MOS6581" (set "rec_model=mof") else (set "rec_model=mnf")
+		if /i "%%M" == "MOS6581" (set "rec_model=mof") else (set "rec_model=mnf")
 	)
 ) else (
 	if "!sid_model:~0,1!" == "6" (set "rec_model=mof") else (set "rec_model=mnf")
 )
-if "!sid_model:~0,1!" == "d" (set "digiboost=--digiboost") else (set "digiboost=")
+if /i "!sid_model:~0,1!" == "d" (set "digiboost=--digiboost") else (set "digiboost=")
 
-if "!rec_model!" == "mof" (set "rec_filter_curve=!filter_curve_6581!") else (set "rec_filter_curve=0.5")
+if /i "!rec_model!" == "mof" (set "rec_filter_curve=!filter_curve_6581!") else (set "rec_filter_curve=0.5")
 
 
 set "common_set=-ols!track! -t!rec_time! --delay=!delay! -!rec_clock! -!rec_model! !digiboost! --fcurve=!rec_filter_curve! --frange=!filter_range_6581! -cw!combined_waves:~0,1! -f192000"
@@ -70,11 +70,11 @@ set "common_set=-ols!track! -t!rec_time! --delay=!delay! -!rec_clock! -!rec_mode
 set "mute_set=-u1 -u2 -u3 -u4 -u5 -u6 -u7 -u8 -u9"
 
 set "chn=3"
-for /f "tokens=3" %%2 in ('sidplayfp -v -t1 --none "!full_sid_path!" 2^>^&1 ^|find /i "2nd SID"') do (if "%%2" == "2nd" set "chn=6")
-for /f "tokens=3" %%3 in ('sidplayfp -v -t1 --none "!full_sid_path!" 2^>^&1 ^|find /i "3rd SID"') do (if "%%3" == "3rd" set "chn=9")
+for /f "tokens=3" %%2 in ('sidplayfp -v -t1 --none "!full_sid_path!" 2^>^&1 ^|find /i "2nd SID"') do (if /i "%%2" == "2nd" set "chn=6")
+for /f "tokens=3" %%3 in ('sidplayfp -v -t1 --none "!full_sid_path!" 2^>^&1 ^|find /i "3rd SID"') do (if /i "%%3" == "3rd" set "chn=9")
 
 
-if not "!record_mode:~0,1!" == "t" (
+if /i not "!record_mode:~0,1!" == "t" (
 
 	for /l %%N in (0,1,!chn!) do (
 
@@ -84,7 +84,7 @@ if not "!record_mode:~0,1!" == "t" (
 			for /l %%D in (0,1,1) do (
 				if "%%D" == "1" (set "nf=-nf") else (set "nf=")
 			
-				if "%%E%%D!record_mode:~0,1!" == "00n" (set "g=") else (set "g=-g1 -g2 -g3")
+				if /i "%%E%%D!record_mode:~0,1!" == "00n" (set "g=") else (set "g=-g1 -g2 -g3")
 			
 				!sidplayfp_q! !mute_set:-u%%N=! !tw! !nf! !g! !common_set! -ri -m --wav"!ffmpeg_path!\sv_%%N_tw%%E_nf%%D.wav" "!full_sid_path!"
 			)
@@ -94,7 +94,7 @@ if not "!record_mode:~0,1!" == "t" (
 
 !sidplayfp_q! !common_set! -rr -!pan:~0,1! --wav"!ffmpeg_path!\sv_a.wav" "!full_sid_path!"
 
-if "!record_mode:~0,1!" == "v" (!sidplayfp_q! !mute_set! -nf !common_set! -ri -m --wav"!ffmpeg_path!\sv_v.wav" "!full_sid_path!")
+if /i "!record_mode:~0,1!" == "v" (!sidplayfp_q! !mute_set! -nf !common_set! -ri -m --wav"!ffmpeg_path!\sv_v.wav" "!full_sid_path!")
 
 
 cd !ffmpeg_path!
@@ -102,14 +102,14 @@ cd !ffmpeg_path!
 
 set "trim=silenceremove=start_periods=1"
 
-if "!rec_clock!" == "vnf" (set "a_match_rate=192008") else (set "a_match_rate=192045")
+if /i "!rec_clock!" == "vnf" (set "a_match_rate=192008") else (set "a_match_rate=192045")
 
 
 !ffmpeg_q! -i "sv_a.wav" ^
 -filter_complex "[0:a]!trim!,highpass=f=2:p=1,asetrate=!a_match_rate!,aresample=192000:resampler=soxr,afade=t=in:ns=!fadein_samples![a_trm_hpf_rsm_fdi]" ^
 -map "[a_trm_hpf_rsm_fdi]" "sv_a_trm_hpf_rsm_fdi.wav"
 
-if "!record_mode:~0,1!" == "v" (
+if /i "!record_mode:~0,1!" == "v" (
 	for /f "tokens=6 delims=- " %%A in ('ffmpeg -i "sv_v.wav" -af "astats" -f null nul 2^>^&1 ^|find /i "DC offset"') do (
 		!ffmpeg_q! -y -i "sv_v.wav" -filter_complex "[0:a]!trim!,dcshift=%%A[v_trm_0dc]" -map "[v_trm_0dc]" "sv_v_trm_0dc.wav"
 	)
@@ -121,7 +121,7 @@ set "invert=aeval='-val(0)':c=same"
 set "mix=amix=normalize=0"
 
 
-if not "!record_mode:~0,1!" == "t" (
+if /i not "!record_mode:~0,1!" == "t" (
 
 	for /l %%N in (1,1,!chn!) do (
 		for /l %%E in (0,1,1) do (
@@ -137,7 +137,7 @@ if not "!record_mode:~0,1!" == "t" (
 		)
 	)
 
-	if "!record_mode:~0,1!" == "v" (
+	if /i "!record_mode:~0,1!" == "v" (
 	
 		!ffmpeg_q! -i "sv_v_trm_0dc.wav" -filter_complex "[0:a]atrim=start_sample=!fadein_samples![v_trm_0dc_nrf]" -map "[v_trm_0dc_nrf]" "sv_v_trm_0dc_nrf.wav"
 		
@@ -145,15 +145,15 @@ if not "!record_mode:~0,1!" == "t" (
 		
 	)
 
-	for /f "tokens=2 delims=@" %%L in ('ffmpeg -i "sv_1_tw0_nf0_trm_0dc.wav" -af "volumedetect" -f null nul 2^>^&1 ^|find "n_samples"') do (
+	for /f "tokens=2 delims=@" %%L in ('ffmpeg -i "sv_1_tw0_nf0_trm_0dc.wav" -af "volumedetect" -f null nul 2^>^&1 ^|find /i "n_samples"') do (
 		for /f "tokens=3" %%S in ("%%L") do (
 			for /l %%N in (1,1,!chn!) do (set /a "samples_x%%N=%%S*%%N")
 		)
 	)
 ) else (
-	for /f "tokens=2 delims=@" %%L in ('ffmpeg -i "sv_a_trm_hpf_rsm_fdi.wav" -af "volumedetect" -f null nul 2^>^&1 ^|find "n_samples"') do (
+	for /f "tokens=2 delims=@" %%L in ('ffmpeg -i "sv_a_trm_hpf_rsm_fdi.wav" -af "volumedetect" -f null nul 2^>^&1 ^|find /i "n_samples"') do (
 		for /f "tokens=3" %%S in ("%%L") do (
-			if "!pan:~0,1!" == "s" (set /a "samples_x1=%%S/2") else (set "samples_x1=%%S")
+			if /i "!pan:~0,1!" == "s" (set /a "samples_x1=%%S/2") else (set "samples_x1=%%S")
 		)
 	)
 )
@@ -168,7 +168,7 @@ set ot=0!track!
 for %%F in ("!full_sid_path!") do (set "prefix=!wav_path!\!ot:~-2!_%%~nF")
 
 
-if not "!record_mode:~0,1!" == "t" (
+if /i not "!record_mode:~0,1!" == "t" (
 	for /l %%E in (0,1,1) do (
 		for /l %%D in (0,1,1) do (
 	
@@ -185,7 +185,7 @@ if not "!record_mode:~0,1!" == "t" (
 					-map "[%%N_tw%%E_nf%%D_trm_0dc_nrm_fdo]" "!prefix!_tw%%E_nf%%D_%%N.wav"
 				)
 				
-				if "%%E%%D!record_mode:~0,1!" == "00v" (
+				if /i "%%E%%D!record_mode:~0,1!" == "00v" (
 					!ffmpeg_q! -i "sv_v_trm_0dc.wav" -filter_complex "[0:a]volume=%%VdB,!fadeout![v_trm_0dc_nrm_fdo]" -map "[v_trm_0dc_nrm_fdo]" "!prefix!_tw0_nf0_v.wav"
 				)
 

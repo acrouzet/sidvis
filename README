@@ -30,7 +30,7 @@ programs may be compatible:
 
 
 
-[SET_SIDVIS.BAT]
+[SIDVIS-SET.BAT]
 
 Before using sidvis, you need to provide some settings pointing to required 
 programs and the SID music you'd like to record. Edit sidvis_set.bat in a text 
