@@ -67,6 +67,7 @@ set track=<#>
 
 
 set record_mode=<[n]ormal|[v]olume|[t]est>
+   * normal = Supports tracks that use up to 3 SID chips. 
    * volume = Record the master volume output separate from the other channels. 
      Use this for tracks that use the master volume as a fourth channel.
    * test = Only do one recording with all channels enabled.
