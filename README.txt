@@ -127,7 +127,8 @@ set fadein_samples=<#>
 set quiet=<#>
    * Set this lower if you want to see the recording progress and/or the properties
      of what's being recorded.
-   * 1 = Echo off. (For debug purposes. Can slow things down significantly.)
+   * 0 = For debug purposes. Can slow things down significantly.
+   * 1 = Echo off. 
    * 2 = Quiet ffmpeg.
    * 3 = Quiet sidplayfp.
 
