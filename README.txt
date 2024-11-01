@@ -67,10 +67,16 @@ set track=<#>
 
 
 set record_mode=<[n]ormal|[v]olume|[t]est>
-   * normal = Supports tracks that use up to 3 SID chips. 
-   * volume = Record the master volume output separate from the other channels. 
-     Use this for tracks that use the master volume as a fourth channel.
-   * test = Only do one recording with all channels enabled.
+   * normal = Supports 1SID, 2SID, and 3SID files with automatic detection, but does 
+     not isolate the master volume output.
+   * volume = Isolates the master volume output, but only supports 1SID files.
+   * test = Only does one recording with all channels mixed.
+
+set pan=<[m]ono|[s]tereo>
+   * Set the stereo configuration of the master audio. 
+   * Only works with tracks that use over 2 SID chips.
+   * Stereo options are currently quite limited and may not be ideal, especially
+     for 3 SID chips.
 
 set time=<##:##>
    * Must always be in MM:SS format.
@@ -81,13 +87,6 @@ set time=<##:##>
 set fadeout_seconds=<#>
    * The length, in seconds, of a fade-out that can be added to the end of the 
     .WAV recordings.
-
-
-set pan=<[m]ono|[s]tereo>
-   * Set the stereo configuration of the master audio. 
-   * Only works with tracks that use over 2 SID chips.
-   * Stereo options are currently quite limited and may not be ideal, especially
-     for 3 SID chips.
 
 
 set clock=<[n]tsc|[p]al]|[a]uto>
@@ -126,7 +125,9 @@ set fadein_samples=<#>
 
 
 set quiet=<#>
-   * For debug purposes.
+   * Set this lower if you want to see the recording progress and/or the properties
+     of what's being recorded. (quiet=1 is for debug purposes and can slow things 
+     down significantly.)
    * 1 = Echo off.
    * 2 = Quiet ffmpeg.
    * 3 = Quiet sidplayfp.
