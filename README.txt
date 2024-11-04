@@ -37,17 +37,17 @@ editor to provide and/or change the settings used by sidvis.
 (Non-path options must be lower-case.)
 
 
-set sidplayfp_path=<(path)>
+set sidplayfp_path=<[path]>
    * Path to the folder containing the sidvis-sidplayfp executable.
    * The .ZIP release sets this for you.
 
-set ffmpeg_path=<(path)>
+set ffmpeg_path=<[path]>
    * Path to the folder containing the ffmpeg executable.
 
-set hvsc_path=<(path)>
+set hvsc_path=<[path]>
    * Path to the folder containing the High Voltage SID Collection.
 
-set wav_path=<(path)>
+set wav_path=<[path]>
    * Path to the folder to output the .WAV recordings in.
 
 
@@ -56,7 +56,7 @@ set use_hvsc=<0|1>
    * 0 = Don't use the HVSC.
    * 1 = Use the HVSC.
 
-set sid_path=<(path)>
+set sid_path=<[path]>
    * Path to the .SID file to record.
    * If use_hvsc=1, this path must start from your hvsc_path (i.e. this setting
      will be expanded to the full path "<hvsc_path>\<sid_path>").
@@ -66,13 +66,13 @@ set track=<#>
      set this to 1.
 
 
-set record_mode=<[n]ormal|[v]olume|[t]est>
+set record_mode=<n(ormal)|v(olume)|t(est)>
    * normal = Supports 1SID, 2SID, and 3SID files with automatic detection, but
      does not isolate the master volume output.
    * volume = Isolates the master volume output, but only supports 1SID files.
    * test = Only does one recording with all channels mixed.
 
-set pan=<[m]ono|[s]tereo>
+set pan=<m(ono)|s(tereo)>
    * Set the stereo configuration of the master audio.
    * Only works with tracks that use over 2 SID chips.
    * Stereo options are currently quite limited and may not be ideal, especially
@@ -89,17 +89,17 @@ set fadeout_seconds=<#>
     .WAV recordings.
 
 
-set clock=<[n]tsc|[p]al]|[a]uto>
+set clock=<n(tsc)|p(al)|a(uto)>
    * The C64 clock rates to use.
    * auto = Automatically choose based on the .SID header.
 
-set sid_model=<[6]581|[8]580|[d]igiboost|[a]uto>
+set sid_model=<6(581)|8(580)|d(igiboost)|a(uto)>
    * The SID model to use.
    * digiboost = 8580 modified to have the ability to use the master volume as a
      fourth channel like the 6581.
    * auto = Automatically choose based on the .SID header.
 
-set combined_waves=<[w]eak|[a]verage|[s]trong>
+set combined_waves=<w(eak)|a(verage)|s(trong)>
    * Strength of the combined waves.
    * Weaker combined waves tend to have a thinner timbre.
 
