@@ -152,8 +152,8 @@ In order, the filename contains:
      replaced with simpler ones. In particular, pulse waves and sawtooth-combined
      waves are replaced with sawtooth waves, and triangle+pulse waves are replaced
      with triangle waves. If hard sync is enabled, the waveform is replaced with a 
-	   sawtooth matching the sync source oscillator's frequency (unless the source
-	   also has hard sync enabled). Changes to the master volume are also disabled.
+     sawtooth with the sync source channel's frequency (unless the source also has 
+     hard sync enabled). Changes to the master volume are also disabled.
    * "nf0" or "nf1". "nf1" means the filter and changes to the master volume are
      disabled.
    * A single character representing which channel is enabled/isolated. "v" means
