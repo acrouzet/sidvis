@@ -79,7 +79,7 @@ if /i not "!record_mode:~0,1!" == "t" (
 	for /l %%N in (0,1,!chn!) do (
 
 		for /l %%E in (0,1,1) do (
-			if "%%E" == "1" (set "tw=-tw%%N") else (set "tw=")
+			if "%%E" == "1" (set "tw=-tw") else (set "tw=")
 		
 			for /l %%D in (0,1,1) do (
 				if "%%D" == "1" (set "nf=-nf") else (set "nf=")
