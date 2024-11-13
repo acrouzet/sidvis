@@ -47,14 +47,14 @@ if "!use_hvsc!" == "0" (
 
 
 if /i "!clock:~0,1!" == "a" (
-	for /f "tokens=5 delims= " %%C in ('sidplayfp -v -t0 --none "!full_sid_path!" 2^>^&1 ^|find /i "Song Speed"') do (
+	for /f "tokens=5 delims= " %%C in ('sidplayfp -v -t1 --none "!full_sid_path!" 2^>^&1 ^|find /i "Song Speed"') do (
 		if /i "%%C" == "NTSC" (set "rec_clock=vnf") else (set "rec_clock=vpf")
 	)
 ) else (set "rec_clock=v!clock:~0,1!f")
 
 
 if /i "!sid_model:~0,1!" == "a" (
-	for /f "tokens=7 delims= " %%M in ('sidplayfp -v -t0 --none "!full_sid_path!" 2^>^&1 ^|find /i "SID Details"') do (
+	for /f "tokens=7 delims= " %%M in ('sidplayfp -v -t1 --none "!full_sid_path!" 2^>^&1 ^|find /i "SID Details"') do (
 		if /i "%%M" == "MOS6581" (set "rec_model=mof") else (set "rec_model=mnf")
 	)
 ) else (
