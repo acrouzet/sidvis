@@ -104,7 +104,7 @@ for /l %%X in (!no_os!,1,!xt_record!) do (
 
 		if "!xt_triggerwaves!" == "1" (
 			set /a "rn+=2"
-			set "tw=-tw1 -tw2 -tw3 -tw4 -tw5 -tw6 -tw7 -tw8 -tw9"
+			set "tw=-tw"
 		)
 	
 		if "!xt_no_filter!" == "1" (
