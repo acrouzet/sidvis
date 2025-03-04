@@ -1,43 +1,41 @@
-set sidplayfp_path=
+:: DIRECTORY PATHS
+set sidplayfp_dir=sidvis-sidplayfp
+set hvsc_dir=
+set ffmpeg_dir=
+set wav_dir=
 
-set hvsc_path=
+:: TRACK
+set sid_file_path=
+set track_number=1
 
-set ffmpeg_path=
+:: TIMING
+set record_mm_ss=00:11
+set fadeout_seconds=10
+set add_hvsc_time=1
 
-set wav_path=
+set fadein_samples=2048
+set start_delay_cycles=4096
 
-
-set use_hvsc=0
-
-set sid_path=
-
-set track=1
-
-
-set record_mode=normal
-
-set pan=mono
-
-set time=00:00
-
-set fadeout_seconds=0
-
-
+:: EMULATION
 set clock=auto
-
 set sid_model=auto
-
 set combined_waves=average
-
 set filter_curve_6581=1.0
 set filter_range_6581=0.5
 
+:: MASTER AUDIO
+set ma_record=1
+set ma_pan=mono
 
-set delay=4096
+:: ON-SCREEN WAVEFORMS
+set os_record=1
+set os_d418_digi=0
 
-set fadein_samples=4096
+:: EXTERNAL TRIGGERS
+set xt_record=1
+set xt_triggerwaves=1
+set xt_no_filter=1
 
-
+:: DEBUG
 set quiet=3
-
-set delete_ffmpeg_wavs=1
+set del_ffmpeg_files=1

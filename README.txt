@@ -1,4 +1,4 @@
-------------------------------------- sidvis -------------------------------------
+-------------------------------------[sidvis]-------------------------------------
 
 [ABOUT]
 
@@ -13,6 +13,9 @@ It records many 192 kHz sample rate .WAV files, so wait times may be lengthy.
 
 The .WAV files are recorded from a modified version of sidplayfp (a SID emulation
 software) and are then processed with ffmpeg.
+
+You may need to have the C64 KERNAL and BASIC ROMs in the sidplayfp directory for
+some tunes to playback properly.
 
 The .ZIP release contains the sidvis-sidplayfp executable for Windows.
 
@@ -32,112 +35,134 @@ programs may be compatible:
 [SIDVIS-SET.BAT]
 
 Before using sidvis, you need to provide some settings pointing to required
-programs and the SID music you'd like to record. Edit sidvis_set.bat in a text
+programs and the SID music you'd like to record. Edit sidvis-set.bat in a text
 editor to provide and/or change the settings used by sidvis.
-(Non-path options must be lower-case.)
+
+Settings must be placed directly after the equals sign, with no spaces.
 
 
-set sidplayfp_path=<[path]>
-   * Path to the folder containing the sidvis-sidplayfp executable.
+:: DIRECTORY PATHS
+
+set sidplayfp_dir=
+   * The path to the directory containing the sidvis-sidplayfp executable.
    * The .ZIP release sets this for you.
 
-set ffmpeg_path=<[path]>
-   * Path to the folder containing the ffmpeg executable.
+set ffmpeg_dir=
+   * The path to the directory containing the ffmpeg executable.
 
-set hvsc_path=<[path]>
-   * Path to the folder containing the High Voltage SID Collection.
+set hvsc_dir=
+   * The path to the directory containing the High Voltage SID Collection.
 
-set wav_path=<[path]>
-   * Path to the folder to output the .WAV recordings in.
-
-
-set use_hvsc=<0|1>
-   * Determines how other settings will be interpreted.
-   * 0 = Don't use the HVSC.
-   * 1 = Use the HVSC.
-
-set sid_path=<[path]>
-   * Path to the .SID file to record.
-   * If use_hvsc=1, this path must start from your hvsc_path (i.e. this setting
-     will be expanded to the full path "<hvsc_path>\<sid_path>").
-
-set track=<#>
-   * The number of the .SID track (sub-tune) to record. If there's only one track,
-     set this to 1.
+set wav_dir=
+   * The path to the directory to output the .WAV recordings in.
 
 
-set record_mode=<n(ormal)|v(olume)|t(est)>
-   * normal = Supports 1SID, 2SID, and 3SID files with automatic detection, but
-     does not isolate the master volume output.
-   * volume = Isolates the master volume output, but only supports 1SID files.
-   * test = Only does one recording with all channels mixed.
+:: TRACK
 
-set pan=<m(ono)|s(tereo)>
-   * Set the stereo configuration of the master audio.
+set sid_file_path=
+   * The path to the .SID file to record.
+
+set track_number=
+   * The .SID file track (sub-tune) to record. 
+
+
+:: TIMING
+
+set record_mm_ss=
+   * Must always be in "MM:SS" format.
+   * The length of time to record each .WAV for.
+
+set fadeout_seconds=
+   * The length, in seconds, of a fade-out that can be added to the end of the
+     recordings.
+
+set add_hvsc_time=
+   * Must be either "0" or "1".
+   * "1" adds the track length indexed by the HVSC to the set record time.
+
+set fadein_samples=
+   * The length, in number of samples, of a fade-in that can be added to the start 
+     of the master audio recording.
+   * This is also how many samples of the D418 digi recording to skip when
+     normalizing.
+   * Set this higher if you wish to minimize a pop that often occurs at the start 
+     of the master audio recording, or if the recordings are too quiet.	 
+
+set start_delay_cycles=
+   * C64 power on delay in CPU cycles, ranging from 0 to 8191.
+   * Set this higher if the start of the track is cut off in the recordings.
+
+
+:: EMULATION
+
+set clock=
+   * Must be either "a(uto)", "n(tsc)", or "p(al)". Lower-case only.
+   * The C64 clock rates to use.
+   * "auto" chooses based on the .SID header.
+
+set sid_model=
+   * Must be either "6(581)", "8(580)", or "d(igiboost)". Lower-case only.
+   * The SID model to use.
+   * "digiboost" emulates a 8580 modified to have the ability to playback D418
+     digi like the 6581.
+   * "auto" chooses based on the .SID header.
+
+set combined_waves=
+   * Must be either "w(eak)", "a(verage)", or "s(trong)". Lower-case only.
+   * The strength of the SID's combined waveforms.
+   * Weaker combined waves tend to have a thinner timbre.
+
+set filter_curve_6581=
+  * Must be a number between 0 (light) and 1 (dark). Decimal settings must have a 
+    leading 0.
+  * Together with filter_range_6581, determines the cutoff response of the 6581's
+    filter.
+
+set filter_range_6581=
+  * Must be a number between 0 (dark) and 1 (light). Decimal settings must have a 
+    leading 0.
+  * Together with filter_curve_6581, determines the cutoff response of the 6581's
+    filter.
+
+
+:: MASTER AUDIO
+
+set ma_record=
+   * Must be either "0" or "1".
+   * "1" enables master audio recording.
+
+set ma_pan=
+   * Must be either "m(ono)" or "s(tereo)".
+   * Determines whether the master audio recording is in mono or stereo.
    * Only works with tracks that use over 2 SID chips.
    * Stereo options are currently quite limited and may not be ideal, especially
      for 3 SID chips.
 
-set time=<##:##>
-   * Must always be in MM:SS format.
-   * If use_hvsc=0, the total record time.
-   * If use_hvsc=1, the record time to add onto the track length provided by the
-     HVSC.
 
-set fadeout_seconds=<#>
-   * The length, in seconds, of a fade-out that can be added to the end of the
-    .WAV recordings.
+:: ON-SCREEN WAVEFORMS
 
+set os_record=
+   * Must be either "0" or "1".
+   * "1" enables on-screen waveform recordings.
 
-set clock=<n(tsc)|p(al)|a(uto)>
-   * The C64 clock rates to use.
-   * auto = Automatically choose based on the .SID header.
-
-set sid_model=<6(581)|8(580)|d(igiboost)|a(uto)>
-   * The SID model to use.
-   * digiboost = 8580 modified to have the ability to use the master volume as a
-     fourth channel like the 6581.
-   * auto = Automatically choose based on the .SID header.
-
-set combined_waves=<w(eak)|a(verage)|s(trong)>
-   * Strength of the combined waves.
-   * Weaker combined waves tend to have a thinner timbre.
-
-set filter_curve_6581=<0.0-1.0>
-   * Together with filter_range_6581, determines the cutoff response of the 6581's
-     filter.
-   * Ranges from 0.0 (light) to 1.0 (dark).
-
-set filter_range_6581=<0.0-1.0>
-   * Together with filter_curve_6581, determines the cutoff response of the 6581's
-     filter.
-   * Ranges from 0.0 (dark) to 1.0 (light).
+set os_d418_digi=
+   * Must be either "0" or "1".
+   * "1" enables separate D418 digi recording.
 
 
-set delay=<#>
-   * C64 power on delay in CPU cycles, ranging from 0 to 8191.
-   * Set this higher if the start of the track is cut off in the .WAV recordings.
+:: EXTERNAL TRIGGERS
 
-set fadein_samples=<#>
-   * The length, in number of samples, of a fade-in that can be added to the start
-     of .WAV recordings with all channels enabled.
-   * If record_mode=volume, this is also how many samples of the .WAV recording of
-     the isolated master volume output get skipped when normalizing.
-   * Set this higher if the .WAV recordings are too quiet.
+set xt_record=
+   * Must be either "0" or "1".
+   * "1" enables external trigger recordings.
 
+set xt_triggerwaves=
+   * Must be either "0" or "1".
+   * "1" modifies the SID's output to be easier to trigger.
 
-set quiet=<#>
-   * Set this lower if you want to see the recording progress and/or the
-     properties of what's being recorded.
-   * 0 = For debug purposes. Can slow things down significantly.
-   * 1 = Echo off.
-   * 2 = Quiet ffmpeg.
-   * 3 = Quiet sidplayfp.
-
-set delete_ffmpeg_wavs=<0|1>
-   * For debug purposes. Delete the intermediary files in the ffmpeg_path?
-   * 0 = No
-   * 1 = Yes
+set xt_no_filter=
+   * Must be either "0" or "1".
+   * "1" disables the SID's filter.
 
 
 
@@ -146,13 +171,12 @@ set delete_ffmpeg_wavs=<0|1>
 The contents of a .WAV recording can be determined by looking at its filename.
 
 In order, the filename contains:
-   * The .SID track number.
    * The .SID filename.
-   * "tw0" or "tw1". "tw1" means particularly difficult-to-trigger waveforms are
-     replaced with simpler ones, and changes to the master volume are disabled.
-   * "nf0" or "nf1". "nf1" means the filter and changes to the master volume are
-     disabled.
-   * A single character representing which channel is enabled/isolated. "v" means
-     the master volume output is isolated, and "a" means all channels are enabled.
+   * The track number.
+   * "OS" or "XT". "OS" indicates on-screen waveforms. "XT" indicates external
+     triggers.
+   * "TW" and/or "NF", or neither. "TW" means triggerwaves are enabled. "NF"
+     means the SID's filter is disabled.
+   * The channel number.
 
 ----------------------------------------------------------------------------------
