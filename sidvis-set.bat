@@ -19,7 +19,6 @@ set start_delay_cycles=4096
 :: EMULATION
 set clock=auto
 set sid_model=auto
-set combined_waves=average
 set filter_curve_6581=1.0
 set filter_range_6581=0.5
 

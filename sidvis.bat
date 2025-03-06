@@ -48,18 +48,18 @@ if "!add_hvsc_time!" == "0" (set "rec_time=!sec!")
 
 if "!clock:~0,1!" == "a" (
 	for /f "tokens=5 delims= " %%C in ('sidplayfp -v -t0 --none "!sid_file_path!" 2^>^&1 ^|find /i "Song Speed"') do (
-		if "%%C" == "NTSC" (set "rec_clock=vnf") else (set "rec_clock=vpf")
+		if "%%C" == "NTSC" (set "rec_clock=-vnf") else (set "rec_clock=-vpf")
 	)
-) else (set "rec_clock=v!clock:~0,1!f")
+) else (set "rec_clock=-v!clock:~0,1!f")
 
 
 :: GET SID MODEL
 
 if "!sid_model:~0,1!" == "a" (
 	for /f "tokens=7 delims= " %%M in ('sidplayfp -v -t0 --none "!sid_file_path!" 2^>^&1 ^|find /i "SID Details"') do (
-		if "%%M" == "MOS6581" (set "rec_model=mof") else (set "rec_model=mnf")
+		if "%%M" == "MOS6581" (set "rec_model=-mof -cwa") else (set "rec_model=-mnf -cww")
 	)
-) else (if "!sid_model:~0,1!" == "6" (set "rec_model=mof") else (set "rec_model=mnf"))
+) else (if "!sid_model:~0,1!" == "6" (set "rec_model=-mof -cwa") else (set "rec_model=-mnf -cww"))
 
 if "!sid_model:~0,1!" == "d" (set "digiboost=--digiboost") else (set "digiboost=")
 
@@ -68,7 +68,7 @@ if "!sid_model:~0,1!" == "d" (set "digiboost=--digiboost") else (set "digiboost=
 
 if "!rec_model!" == "mof" (set "rec_filter_curve=!filter_curve_6581!") else (set "rec_filter_curve=0.5")
 
-set "common_set=-ols!track_number! -t!rec_time! --delay=!start_delay_cycles! -!rec_clock! -!rec_model! !digiboost! --fcurve=!rec_filter_curve! --frange=!filter_range_6581! -cw!combined_waves:~0,1! -f192000"
+set "common_set=-ols!track_number! -t!rec_time! --delay=!start_delay_cycles! !rec_clock! !rec_model! !digiboost! --fcurve=!rec_filter_curve! --frange=!filter_range_6581! -f192000"
 
 set "mute_set=-u1 -u2 -u3 -u4 -u5 -u6 -u7 -u8 -u9"
 

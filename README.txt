@@ -107,11 +107,6 @@ set sid_model=
      digi like the 6581.
    * "auto" chooses based on the .SID header.
 
-set combined_waves=
-   * Must be either "w(eak)", "a(verage)", or "s(trong)". Lower-case only.
-   * The strength of the SID's combined waveforms.
-   * Weaker combined waves tend to have a thinner timbre.
-
 set filter_curve_6581=
   * Must be a number between 0 (light) and 1 (dark). Decimal settings must have a 
     leading 0.
