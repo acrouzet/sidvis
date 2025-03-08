@@ -56,25 +56,23 @@ if "!clock:~0,1!" == "a" (
 :: GET SID MODEL
 
 if "!sid_model:~0,1!" == "a" (
-	for /f "tokens=7 delims= " %%M in ('sidplayfp -v -t0 --none "!sid_file_path!" 2^>^&1 ^|find /i "SID Details"') do (
-		if "%%M" == "MOS6581" (set "rec_model=-mof -cwa") else (set "rec_model=-mnf -cww")
-	)
-) else (if "!sid_model:~0,1!" == "6" (set "rec_model=-mof -cwa") else (set "rec_model=-mnf -cww"))
+	for /f "tokens=7 delims= " %%M in ('sidplayfp -v -t0 --none "!sid_file_path!" 2^>^&1 ^|find /i "SID Details"') do (if "%%M" == "MOS6581" (set "is6581=1"))
+) else (if "!sid_model:~0,1!" == "6" (set "is6581=1"))
+
+if "!is6581!" == "1" (set "rec_sid=-mof -cwa --fcurve=!filter_curve_6581!") else (set "rec_sid=-mnf -cww --fcurve=0.5")
 
 if "!sid_model:~0,1!" == "d" (set "digiboost=--digiboost") else (set "digiboost=")
 
 
 :: RECORDING SETUP
 
-if "!rec_model!" == "mof" (set "rec_filter_curve=!filter_curve_6581!") else (set "rec_filter_curve=0.5")
-
-set "common_set=-ols!track_number! -t!rec_time! --delay=!start_delay_cycles! !rec_clock! !rec_model! !digiboost! --fcurve=!rec_filter_curve! --frange=!filter_range_6581! -f192000"
+set "common_set=-ols!track_number! -t!rec_time! --delay=!start_delay_cycles! !rec_clock! !rec_sid! --frange=!filter_range_6581! !digiboost! -f192000"
 
 set "mute_set=-u1 -u2 -u3 -u4 -u5 -u6 -u7 -u8 -u9"
 
 set "chn=3"
-for /f "tokens=3" %%N in ('sidplayfp -v -t1 --none "!sid_file_path!" 2^>^&1 ^|find /i "2nd SID"') do (if "%%N" == "2nd" (set "chn=6"))
-for /f "tokens=3" %%N in ('sidplayfp -v -t1 --none "!sid_file_path!" 2^>^&1 ^|find /i "3rd SID"') do (if "%%N" == "3rd" (set "chn=9"))
+for /f "tokens=3" %%N in ('sidplayfp -v -t0 --none "!sid_file_path!" 2^>^&1 ^|find /i "2nd SID"') do (if "%%N" == "2nd" (set "chn=6"))
+for /f "tokens=3" %%N in ('sidplayfp -v -t0 --none "!sid_file_path!" 2^>^&1 ^|find /i "3rd SID"') do (if "%%N" == "3rd" (set "chn=9"))
 
 
 :: RECORD MASTER AUDIO
@@ -126,7 +124,7 @@ cd !ffmpeg_dir!
 
 if exist "sv_ma.wav" (
 	
-	if "!rec_clock!" == "vnf" (set "ma_sync_rate=192008") else (set "ma_sync_rate=192045")
+	if "!rec_clock!" == "-vnf" (set "ma_sync_rate=192008") else (set "ma_sync_rate=192045")
 	
 	!ffmpeg_q! -i "sv_ma.wav" ^
 	-filter_complex "[0:a]silenceremove=start_periods=1,highpass=f=2:p=1,asetrate=!ma_sync_rate!,aresample=192000:resampler=soxr,afade=t=in:ns=!fadein_samples![ma_srm_hpf_res_fdi]" ^
