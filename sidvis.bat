@@ -47,7 +47,7 @@ if "!add_hvsc_time!" == "0" (set "rec_time=!sec!")
 :: GET CLOCK
 
 if "!clock:~0,1!" == "a" (
-	for /f "tokens=5 delims= " %%C in ('sidplayfp -v -t0 --none "!sid_file_path!" 2^>^&1 ^|find /i "Song Speed"') do (
+	for /f "tokens=5 delims= " %%C in ('sidplayfp -v -t1 --none "!sid_file_path!" 2^>^&1 ^|find /i "Song Speed"') do (
 		if "%%C" == "NTSC" (set "rec_clock=-vnf") else (set "rec_clock=-vpf")
 	)
 ) else (set "rec_clock=-v!clock:~0,1!f")
@@ -56,7 +56,7 @@ if "!clock:~0,1!" == "a" (
 :: GET SID MODEL
 
 if "!sid_model:~0,1!" == "a" (
-	for /f "tokens=7 delims= " %%M in ('sidplayfp -v -t0 --none "!sid_file_path!" 2^>^&1 ^|find /i "SID Details"') do (if "%%M" == "MOS6581" (set "is6581=1"))
+	for /f "tokens=7 delims= " %%M in ('sidplayfp -v -t1 --none "!sid_file_path!" 2^>^&1 ^|find /i "SID Details"') do (if "%%M" == "MOS6581" (set "is6581=1"))
 ) else (if "!sid_model:~0,1!" == "6" (set "is6581=1"))
 
 if "!is6581!" == "1" (set "rec_sid=-mof -cwa --fcurve=!filter_curve_6581!") else (set "rec_sid=-mnf -cww --fcurve=0.5")
@@ -71,8 +71,8 @@ set "common_set=-ols!track_number! -t!rec_time! --delay=!start_delay_cycles! !re
 set "mute_set=-u1 -u2 -u3 -u4 -u5 -u6 -u7 -u8 -u9"
 
 set "chn=3"
-for /f "tokens=3" %%N in ('sidplayfp -v -t0 --none "!sid_file_path!" 2^>^&1 ^|find /i "2nd SID"') do (if "%%N" == "2nd" (set "chn=6"))
-for /f "tokens=3" %%N in ('sidplayfp -v -t0 --none "!sid_file_path!" 2^>^&1 ^|find /i "3rd SID"') do (if "%%N" == "3rd" (set "chn=9"))
+for /f "tokens=3" %%N in ('sidplayfp -v -t1 --none "!sid_file_path!" 2^>^&1 ^|find /i "2nd SID"') do (if "%%N" == "2nd" (set "chn=6"))
+for /f "tokens=3" %%N in ('sidplayfp -v -t1 --none "!sid_file_path!" 2^>^&1 ^|find /i "3rd SID"') do (if "%%N" == "3rd" (set "chn=9"))
 
 
 :: RECORD MASTER AUDIO
