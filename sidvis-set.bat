@@ -21,20 +21,18 @@ set clock=auto
 set sid_model=auto
 set filter_curve_6581=1.0
 set filter_range_6581=0.5
+set combined_waves=average
 
 :: MASTER AUDIO
-set ma_record=1
-set ma_pan=mono
+set ma_enable=0
+set pan=m
 
 :: ON-SCREEN WAVEFORMS
-set os_record=1
-set os_d418_digi=0
+set os_enable=0
+set d418_digi=0
 
 :: EXTERNAL TRIGGERS
-set xt_record=1
-set xt_triggerwaves=1
-set xt_no_filter=1
-
-:: DEBUG
-set quiet=3
-set del_ffmpeg_files=1
+set regularwaves_filtered_channels=0
+set regularwaves_nofilter_channels=0
+set triggerwaves_filtered_channels=0
+set triggerwaves_nofilter_channels=0
