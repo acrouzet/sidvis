@@ -32,6 +32,7 @@ set os_enable=0
 set d418_digi=0
 
 :: EXTERNAL TRIGGERS
+set xt_enable=0
 set regularwaves_filtered_channels=0
 set regularwaves_nofilter_channels=0
 set triggerwaves_filtered_channels=0

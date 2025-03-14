@@ -8,11 +8,18 @@ set quiet=3
 set del_ffmpeg_files=1
 
 
+:: SET QUIET LEVEL
+
 if !quiet! geq 1 (set "echo_q=") else (set "echo_q=echo on")
 if !quiet! geq 2 (set "ffmpeg_q=ffmpeg -hide_banner -loglevel error") else (set "ffmpeg_q=ffmpeg")
 if !quiet! geq 3 (set "sidplayfp_q=sidplayfp -q2") else (set "sidplayfp_q=sidplayfp -v")
 
 !echo_q!
+
+
+:: CHECKS
+
+if "!regularwaves_filtered_channels!!regularwaves_nofilter_channels!!triggerwaves_filtered_channels!!triggerwaves_nofilter_channels!" == "0000" (set "xt_enable=0")
 
 
 cd !sidplayfp_dir!
@@ -72,19 +79,17 @@ if "!is6581!" == "1" (set "rec_model=-mof --fcurve=!filter_curve_6581!") else (s
 
 :: COMBINE COMMON SETTINGS
 
-set "com_set=-ols!track_number! -t!rec_time! --delay=!start_delay_cycles! !rec_clock! !digiboost! !rec_model! --frange=!filter_range_6581! -cw!combined_waves:~0,1! -f192000"
+set "coms=-ols!track_number! -t!rec_time! --delay=!start_delay_cycles! !rec_clock! !digiboost! !rec_model! --frange=!filter_range_6581! -cw!combined_waves:~0,1! -f192000"
 
 
 :: RECORD MASTER AUDIO
 
-if "!ma_enable!" == "1" (!sidplayfp_q! !com_set! -rr -!pan:~0,1! --wav"!ffmpeg_dir!\sv_ma.wav" "!sid_file_path!")
+if "!ma_enable!" == "1" (!sidplayfp_q! !coms! -rr -!pan:~0,1! --wav"!ffmpeg_dir!\sv_ma.wav" "!sid_file_path!")
 
 
 :: GET TOTAL CHANNEL NUMBER
 
-if "!os_enable!!regularwaves_filtered_channels!!regularwaves_nofilter_channels!!triggerwaves_filtered_channels!!triggerwaves_nofilter_channels!" == "00000" (
-	set "ma_only=1"
-) else (
+if not "!os_enable!!xt_enable!" == "00" (
 	set "total_chn=3"
 	for /f "tokens=3" %%N in ('sidplayfp -v -t1 --none "!sid_file_path!" 2^>^&1 ^|find /i "2nd SID"') do (if "%%N" == "2nd" (set "total_chn=6"))
 	for /f "tokens=3" %%N in ('sidplayfp -v -t1 --none "!sid_file_path!" 2^>^&1 ^|find /i "3rd SID"') do (if "%%N" == "3rd" (set "total_chn=9"))
@@ -93,14 +98,18 @@ if "!os_enable!!regularwaves_filtered_channels!!regularwaves_nofilter_channels!!
 
 :: RECORD SPLIT CHANNELS
 
-if not "!ma_only!" == "1" (
+if not "!os_enable!!xt_enable!" == "00" (
 
-	set "mute_set=-u1 -u2 -u3 -u4 -u5 -u6 -u7 -u8 -u9"
+	if "!xt_enable!" == "1" (set "ri=0") else (set "ri=4")
 
-	for /l %%R in (0,1,4) do (
+	set "mutes=-u1 -u2 -u3 -u4 -u5 -u6 -u7 -u8 -u9"
 
-		set "tw_nf="
+	for /l %%R in (!ri!,1,4) do (
+
 		set "nv=-g1 -g2 -g3"
+		set "ne=-ne"
+		set "tw_nf="
+
 
 		if "%%R" == "0" (set "chn_list=!regularwaves_filtered_channels!")
 
@@ -122,7 +131,8 @@ if not "!ma_only!" == "1" (
 		if "%%R" == "4" (
 			if "!os_enable!" == "1" (
 				set "chn_list=a"
-				if "!d418_digi!" == "1" (!sidplayfp_q! !mute_set! !com_set! -ri -m --wav"!ffmpeg_dir!\sv_dd.wav" "!sid_file_path!") else (set "nv=")
+				set "ne="
+				if "!d418_digi!" == "1" (!sidplayfp_q! !mutes! !coms! -ri -m --wav"!ffmpeg_dir!\sv_dd.wav" "!sid_file_path!") else (set "nv=")
 			) else (
 				set "chn_list=0"
 			)
@@ -132,7 +142,7 @@ if not "!ma_only!" == "1" (
 
 		if not "!chn_list!" == "0" (
 			for %%C in (0,!chn_list!) do (
-				if %%C leq !total_chn! (!sidplayfp_q! !mute_set:-u%%C=! !tw_nf! !nv! !com_set! -ri -m --wav"!ffmpeg_dir!\sv_%%R_%%C.wav" "!sid_file_path!")
+				if %%C leq !total_chn! (!sidplayfp_q! !mutes:-u%%C=! !nv! !ne! !tw_nf! !coms! -ri -m --wav"!ffmpeg_dir!\sv_%%R_%%C.wav" "!sid_file_path!")
 			)
 		)
 
@@ -159,18 +169,18 @@ if exist "sv_ma.wav" (
 
 :: SPLIT CHANNELS - START SILENCE REMOVE, GET TIME REF, CANCEL DC, MAKE OS CONCAT LIST
 
-for /l %%R in (0,1,4) do (
+for /l %%R in (!ri!,1,4) do (
 	if exist "sv_%%R_0.wav" (
-		
+
 		!ffmpeg_q! -i "sv_%%R_0.wav" ^
 		-filter_complex "[0:a]silenceremove=start_periods=1,aeval=-val(0):c=same[%%R_0_srm_inv]" ^
 		-map "[%%R_0_srm_inv]" "sv_%%R_0_srm_inv.wav"
-		
+
 		set "time_ref=sv_%%R_0_srm_inv.wav"
-	
+
 		for /l %%C in (1,1,!total_chn!) do (
 			if exist "sv_%%R_%%C.wav" (
-	
+
 				!ffmpeg_q! -i "sv_%%R_%%C.wav" -i "sv_%%R_0_srm_inv.wav" ^
 				-filter_complex "[0:a]silenceremove=start_periods=1,[1:a]amix=normalize=0[%%R_%%C_srm_0dc]" ^
 				-map "[%%R_%%C_srm_0dc]" "sv_%%R_%%C_srm_0dc.wav"
@@ -189,7 +199,7 @@ for /l %%R in (0,1,4) do (
 if exist "sv_dd.wav"  (
 
 	for /f "tokens=6 delims=- " %%A in ('ffmpeg -i "sv_dd.wav" -af "astats" -f null nul 2^>^&1 ^|find /i "DC offset"') do (
-	
+
 		!ffmpeg_q! -y -i "sv_dd.wav" ^
 		-filter_complex "[0:a]silenceremove=start_periods=1,dcshift=%%A[dd_srm_0dc]" ^
 		-map "[dd_srm_0dc]" "sv_dd_srm_0dc.wav"
@@ -207,12 +217,12 @@ if exist "sv_dd.wav"  (
 
 :: GET TIMES IN SAMPLES
 
-if "!ma_only!" == "1" (set "time_ref=sv_ma_srm_hpf_res_fdi.wav")
+if "!os_enable!!xt_enable!" == "00" (set "time_ref=sv_ma_srm_hpf_res_fdi.wav")
 
 for /f "tokens=2 delims=@" %%L in ('ffmpeg -i "!time_ref!" -af "volumedetect" -f null nul 2^>^&1 ^|find "n_samples"') do (
 	for /f "tokens=3" %%S in ("%%L") do (
-	
-		if "!ma_only!" == "1" (
+
+		if "!os_enable!!xt_enable!" == "00" (
 			if "!pan:~0,1!" == "s" (set /a "samples_x1=%%S/2") else (set "samples_x1=%%S")
 		) else (
 			if exist "sv_4_cct_srm_0dc.txt" (for /l %%C in (1,1,!total_chn!) do (set /a "samples_x%%C=%%S*%%C"))
@@ -232,7 +242,7 @@ if not "!ma_enable!!os_enable!" == "00" (
 	if !fadeout_start_sample! lss 0 (set fadeout_start_sample=0)
 
 	if !fadeout_seconds! geq 1 (set "fadeout=afade=t=out:ss=!fadeout_start_sample!:ns=!fadeout_samples!:curve=cub") else (set "fadeout=anull")
-	
+
 )
 
 
@@ -244,53 +254,53 @@ for %%F in ("!sid_file_path!") do (set "prefix=!wav_dir!\%%~nF_T!ot:~-2!")
 
 :: SPLIT CHANNELS - NORMALIZE, FADEOUT OS, OUTPUT
 
-for /l %%R in (0,1,4) do (
+for /l %%R in (!ri!,1,4) do (
 	if exist "sv_%%R_0.wav" (
 
 		if "%%R" == "4" (
-			
+
 			!ffmpeg_q! -f concat -safe 0 -i "sv_4_cct_srm_0dc.txt" -c copy "sv_4_cct_srm_0dc.wav"
 			for /f "tokens=5 delims=- " %%V in ('ffmpeg -i "sv_4_cct_srm_0dc.wav" -af "volumedetect" -f null nul 2^>^&1 ^|find /i "max_volume"') do (
 
 				for /l %%C in (1,1,!total_chn!) do (
-				
+
 					set /a "samples_xprev=samples_x%%C-samples_x1"
 
 					!ffmpeg_q! -i "sv_4_cct_srm_0dc.wav" ^
 					-filter_complex "[0:a]atrim=start_sample=!samples_xprev!:end_sample=!samples_x%%C!,volume=%%VdB,asetpts=PTS-STARTPTS,!fadeout![4_%%C_srm_0dc_nrm_fdo]" ^
 					-map "[4_%%C_srm_0dc_nrm_fdo]" "!prefix!_OS_C%%C.wav"
-				
+
 				)
-				
+
 				if exist "sv_dd_srm_0dc.wav" (
-				
+
 					!ffmpeg_q! -i "sv_dd_srm_0dc.wav" ^
 					-filter_complex "[0:a]volume=%%VdB,!fadeout![dd_srm_0dc_nrm_fdo]" ^
 					-map "[dd_srm_0dc_nrm_fdo]" "!prefix!_OS_DD.wav"
-		
+
 				)
-			
+
 			)
-			
+
 		) else (
-			
+
 			if "%%R" == "0" (set "suffix=RW_FI")
 			if "%%R" == "1" (set "suffix=RW_NF")
 			if "%%R" == "2" (set "suffix=TW_FI")
 			if "%%R" == "3" (set "suffix=TW_NF")
-	
+
 			for /l %%C in (1,1,!total_chn!) do (
 				if exist "sv_%%R_%%C_srm_0dc.wav" (
 					for /f "tokens=5 delims=- " %%V in ('ffmpeg -i "sv_%%R_%%C_srm_0dc.wav" -af "volumedetect" -f null nul 2^>^&1 ^|find /i "max_volume"') do (
-					
+
 						!ffmpeg_q! -i "sv_%%R_%%C_srm_0dc.wav" ^
 						-filter_complex "[0:a]volume=%%VdB[%%R_%%C_srm_0dc_nrm]" ^
 						-map "[%%R_%%C_srm_0dc_nrm]" "!prefix!_XT_!suffix!_C%%C.wav"
-	
+
 					)
 				)
 			)
-		
+
 		)
 
 	)
