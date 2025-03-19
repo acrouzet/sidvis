@@ -9,9 +9,9 @@ set sid_file_path=
 set track_number=1
 
 :: TIMING
+set add_hvsc_time=0
 set record_mm_ss=00:11
 set fadeout_seconds=10
-set add_hvsc_time=1
 
 set fadein_samples=2048
 set start_delay_cycles=4096
@@ -25,7 +25,7 @@ set combined_waves=average
 
 :: MASTER AUDIO
 set ma_enable=0
-set pan=m
+set pan=mono
 
 :: ON-SCREEN WAVEFORMS
 set os_enable=0

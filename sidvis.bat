@@ -108,24 +108,28 @@ if not "!os_enable!!xt_enable!" == "00" (
 
 		set "nv=-g1 -g2 -g3"
 		set "ne=-ne"
-		set "tw_nf="
+		set "tw_tf_nf="
 
-
-		if "%%R" == "0" (set "chn_list=!regularwaves_filtered_channels!")
+		if "%%R" == "0" (
+			set "chn_list=!regularwaves_filtered_channels!"
+			if "!is6581!" == "1" (set "ne=")
+			set "tw_tf_nf=-tf" 
+			)
 
 		if "%%R" == "1" (
 			set "chn_list=!regularwaves_nofilter_channels!"
-			set "tw_nf=-nf"
+			set "tw_tf_nf=-nf"
 		)
 
 		if "%%R" == "2" (
 			set "chn_list=!triggerwaves_filtered_channels!"
-			set "tw_nf=-tw"
+			if "!is6581!" == "1" (set "ne=")
+			set "tw_tf_nf=-tw -tf"
 		)
 
 		if "%%R" == "3" (
 			set "chn_list=!triggerwaves_nofilter_channels!"
-			set "tw_nf=-tw -nf"
+			set "tw_tf_nf=-tw -nf"
 		)
 
 		if "%%R" == "4" (
@@ -142,7 +146,7 @@ if not "!os_enable!!xt_enable!" == "00" (
 
 		if not "!chn_list!" == "0" (
 			for %%C in (0,!chn_list!) do (
-				if %%C leq !total_chn! (!sidplayfp_q! !mutes:-u%%C=! !nv! !ne! !tw_nf! !coms! -ri -m --wav"!ffmpeg_dir!\sv_%%R_%%C.wav" "!sid_file_path!")
+				if %%C leq !total_chn! (!sidplayfp_q! !mutes:-u%%C=! !nv! !ne! !tw_tf_nf! !coms! -ri -m --wav"!ffmpeg_dir!\sv_%%R_%%C.wav" "!sid_file_path!")
 			)
 		)
 
