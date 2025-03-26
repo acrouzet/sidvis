@@ -24,16 +24,16 @@ set filter_range_6581=0.5
 set combined_waves=average
 
 :: MASTER AUDIO
-set ma_enable=0
-set pan=mono
+set MA_enable=0
+set pan=m
 
 :: ON-SCREEN WAVEFORMS
-set os_enable=0
-set d418_digi=0
+set OS_enable=0
+set D418_digi=0
 
 :: EXTERNAL TRIGGERS
-set xt_enable=0
-set regularwaves_filtered_channels=0
-set regularwaves_nofilter_channels=0
-set triggerwaves_filtered_channels=0
-set triggerwaves_nofilter_channels=0
+set XT_enable=0
+set FIltered-RegularWaves_Channels=0
+set FIltered-TriggerWaves_Channels=0
+set NoFilter-RegularWaves_Channels=0
+set NoFilter-TriggerWaves_Channels=0
